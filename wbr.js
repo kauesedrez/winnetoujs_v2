@@ -15,15 +15,17 @@ const { default: Matcher } = require("node-html-parser/dist/matcher");
 const beautify = require("js-beautify").js;
 const escapeStringRegexp = require("escape-string-regexp");
 
+var idList = [];
+
 // Inicia o programa
 createConstructosClass();
 
-const l = (a, b) => {
+function l(a, b) {
   a || b ? console.log("\n============") : null;
   a ? console.dir(a) : null;
   b ? console.log(b) : null;
   a || b ? console.log("============") : null;
-};
+}
 
 /**
  * Create Constructos class from source constructos folder.
@@ -50,21 +52,9 @@ async function createConstructosClass() {
     // agora tenhos os metodos na variavel resultado
 
     let resultadoFinal = `
-    class Constructos {
-      _test(elements) {
-        Object.keys(elements).forEach(key => {
-          if (typeof elements[key] === 'object') {
-            // é mutable
-          }
-        });
-      }
-
-      _getIdentifier(elements) {
-        return "";
-      }
-
+    import WinnetouBase from "./_winnetouBase.js";
+    export default class Constructos extends WinnetouBase {
       ${resultado}
-
     }
     `;
 
@@ -76,7 +66,7 @@ async function createConstructosClass() {
     // agora tenho a class Constructos pronta na variavel resultadoFinal
     // agora tenho que salvar o arquivo
 
-    await fs.outputFile("./.generatedConstructos.js", resultadoFinal);
+    await fs.outputFile("./_generatedConstructos.js", resultadoFinal);
 
     console.log("\n\n\nConstructos Class gerado com sucesso.");
   });
@@ -99,21 +89,74 @@ async function transformarConstructo(arquivo) {
         let retornoTotal = "";
 
         Array.from(componentes).forEach(componente => {
+          let descri = componente.getAttribute("description");
           let constructo = componente.innerHTML;
+          let jsdoc = "\n\n/**\n";
+          jsdoc += `\t* ${descri || ""}\n`;
+          let elementsObrigatorio = false;
+          let jsdoc2 = "";
 
-          //Todo:
-          // lógica dos ids
+          l("descri", descri);
+
+          // todo:
+          // [ok] lógica dos ids
+          // ao chamar o metodo da classe Constructos tem que criar o
+          // id automaticamente, win-simpleDiv-1
 
           let id = constructo.match(/\[\[\s?(.*?)\s?\]\]/)[1];
 
-          // elements replace
+          //verifica se o id é repetido
+          let verifica = idList.filter(data => data.id === id);
+
+          if (verifica.length > 0) {
+            console.log(
+              `O constructo ${id} do arquivo ${arquivo} está duplicado`
+            );
+
+            console.log(
+              `Arquivo original: ${verifica[0].arquivo}\n\n`
+            );
+            throw new Error("id-001");
+          }
+
+          idList.push({
+            arquivo,
+            id,
+          });
+
+          // ===========================================
+          // ids replace ===============================
+          // ===========================================
+
+          /*
+          // Isso aqui para retornar os ids
+
+          var regId = /\[\[\s*?(.*?)\s*?\]\]/g;
+          var matchIds = constructo.match(regId);
+          matchIds = matchIds.map(item => item.replace("[[", "").replace("]]", ""));
+          matchIds = matchIds.map(item => "win-" + item + "-${identifier}");
+
+           matchIds.forEach(item => {
+             let nome = item.split("-win-")[0];
+             retorno[nome] = "#" + item;
+           });
+           */
+
+          constructo = constructo.replace(
+            /\[\[\s*?(.*?)\s*?\]\]/g,
+            "win-$1-${identifier}"
+          );
+
+          // ===========================================
+          // elements replace ==========================
+          // ===========================================
+
           // tenho que achar todos os elements dentro do constructo
           let regex = new RegExp("{{\\s*?(.*?)\\s*?}}", "g");
 
           let matches = constructo.match(regex);
 
           matches.forEach(match => {
-            l("match", match);
             //match contem o element puro
             //match = "{{texto % Texto a ser apresentado na simpleDiv}}"
 
@@ -121,19 +164,20 @@ async function transformarConstructo(arquivo) {
             let el = match.replace("{{", "");
             el = el.replace("}}", "");
 
-            l("el", el);
-
             // verifica se tem comentario o jsdoc
             let elArr = el.split("%");
 
             // verifica se o element é obrigatório ou opcional
             let obrigatorio = false;
             if (elArr[0].indexOf("?") != -1) {
-              // é obrigatorio
+              // é opcional
+              // quando tem o ? antes do element
+              // quer dizer que o mesmo é opcional
               obrigatorio = false;
             } else {
-              // é opcional
+              // é obrigatorio
               obrigatorio = true;
+              elementsObrigatorio = true;
             }
 
             //remove o ? do element e aplica o trim
@@ -142,11 +186,15 @@ async function transformarConstructo(arquivo) {
             el = elArr[0].replace("?", "").trim();
             let comentario = elArr[1] || "";
 
-            //Todo:
-            // Comentário jsdoc
+            // todo:
+            // [ok] Comentário jsdoc
 
-            l("el apos trim", el);
-            l("constructo", constructo);
+            l(el);
+            l(obrigatorio ? "obrigatorio" : "opcional", comentario);
+
+            jsdoc2 += `\t* @param {string${
+              obrigatorio ? "" : "="
+            }} elements.${el} ${comentario.trim()}\n`;
 
             // transforma o match em uma regexp aceitável
             let escapedString = escapeStringRegexp(match);
@@ -156,16 +204,25 @@ async function transformarConstructo(arquivo) {
               new RegExp(escapedString, "g"),
               "${elements." + el + (obrigatorio ? "" : ' || ""') + "}"
             );
-
-            l("constructo apos replace", constructo);
           });
+
+          if (elementsObrigatorio)
+            jsdoc += "\t* @param {object} elements\n";
+          else jsdoc += "\t* @param {object} [elements]\n";
+
+          jsdoc += jsdoc2;
+
+          jsdoc += "\t* @param {object} [options]\n";
+          jsdoc += "\t* @param {string=} options.identifier\n";
+          jsdoc += "\t*/\n";
 
           // agora tenho que transformar o componente em metodo
           let retorno =
+            jsdoc +
             id +
-            " = elements => {" +
+            " = (elements, options) => {" +
             "this._test(elements);" +
-            "let identifier = this._getIdentifier(elements);" +
+            "let identifier = this._getIdentifier(options?options.identifier || 'notSet':'notSet');" +
             "return `" +
             constructo +
             "`;" +
@@ -176,7 +233,10 @@ async function transformarConstructo(arquivo) {
         });
 
         return resolve(
-          beautify(retornoTotal, { indent_size: 2, space_in_empty_paren: true })
+          beautify(retornoTotal, {
+            indent_size: 2,
+            space_in_empty_paren: true,
+          })
         );
       });
     } catch (e) {
