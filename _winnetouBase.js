@@ -136,13 +136,12 @@ export default class WinnetouBase {
   /**
    * Gets the value of passed winnetou mutable
    * @param {string} mutable string that represents a winnetou mutable
-   * @returns {string|boolean} value or false if not exists
+   * @returns {string} value or null if not exists
    */
   getMutable(mutable) {
     let local_mutable =
-      window.localStorage.getItem(`mutable_${mutable}`) || false;
-    if (!local_mutable)
-      local_mutable = this.mutable[mutable] || false;
+      window.localStorage.getItem(`mutable_${mutable}`) || null;
+    if (!local_mutable) local_mutable = this.mutable[mutable] || null;
     return local_mutable;
   }
 

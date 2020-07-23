@@ -1,32 +1,40 @@
 import { W } from "./winnetou.js";
 // Sempre use a extensão .js para evitar erros
 
-let appTexto = W.testeMutables({
-  titulo: {
-    mutable: "texto",
-  },
-  texto: "escreva aqui",
-  action: "saveMutable()",
+let post = W.post({
+  nome: "Kaue",
+  post: "Entendendo de vez o WinnetouJs",
+  comentarios: { mutable: "comentarios" },
+  curtidas: { mutable: "curtidas" },
+  Compartilhamentos: { mutable: "compartilhamentos" },
 });
 
-W.create(appTexto.code, "#app");
+let notify = W.notify({
+  comentarios: { mutable: "comentarios" },
+  curtidas: { mutable: "curtidas" },
+  Compartilhamentos: { mutable: "compartilhamentos" },
+});
 
-// vai retornar o appTexto.code;
-
-// let appTexto = W.testeMutables({
-//   titulo: "App Texto",
-//   texto: W.getMutable("texto") || "",
-//   action: "saveMutable()",
-// });
-
-// W.create(appTexto.code, "#app");
+W.create(post.code, "#app");
+W.create(notify.code, "#app");
 
 // @ts-ignore
-window.saveMutable = function saveMutable() {
-  // @ts-ignore
-  let texto = document.getElementById(appTexto.ids.text).value;
+window.comentar = () => {
+  let c = parseInt(W.getMutable("comentarios") || "0");
+  c++;
+  W.setMutable("comentarios", c.toString());
+};
 
-  W.setMutable("texto", texto);
+// @ts-ignore
+window.curtir = () => {
+  let c = parseInt(W.getMutable("curtidas") || "0");
+  c++;
+  W.setMutable("curtidas", c.toString());
+};
 
-  console.log("salvo com sucesso");
+// @ts-ignore
+window.compartilhar = () => {
+  let c = parseInt(W.getMutable("compartilhamentos") || "0");
+  c++;
+  W.setMutable("compartilhamentos", c.toString());
 };

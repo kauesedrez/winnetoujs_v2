@@ -69,6 +69,88 @@ class Winnetou extends WinnetouBase {
         spanTitle: `spanTitle-win-${identifier}`,
       },
     }
+  }
+
+  // ========================================
+
+
+
+
+  /**
+   * Post
+   * @param {object} elements
+   * @param {any} elements.nome 
+   * @param {any} elements.post 
+   * @param {any} elements.comentarios 
+   * @param {any} elements.curtidas 
+   * @param {any} elements.Compartilhamentos 
+   * @param {object} [options]
+   * @param {any=} options.identifier
+   */
+  post = (elements, options) => {
+
+    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
+
+    elements = this._test(identifier, 'post', `post-win-${identifier}`, elements);
+
+    return {
+      code: `
+  <div class="divTitle" id="post-win-${identifier}">
+    <h1>${elements.nome}</h1>
+    <h2>${elements.post}</h2>
+    <h3>
+      Comentários: ${elements.comentarios} | Curtidas: ${elements.curtidas} |
+      Compartilhamentos: ${elements.Compartilhamentos}
+    </h3>
+    <div>
+      <button onclick="comentar()">Comentar</button>
+      <button onclick="curtir()">Curtir</button>
+      <button onclick="compartilhar()">Compartilhar</button>
+    </div>
+  </div>
+`,
+      ids: {
+        post: `post-win-${identifier}`,
+      },
+    }
+  }
+
+  // ========================================
+
+
+
+
+  /**
+   * Post
+   * @param {object} elements
+   * @param {any} elements.comentarios 
+   * @param {any} elements.curtidas 
+   * @param {any} elements.Compartilhamentos 
+   * @param {object} [options]
+   * @param {any=} options.identifier
+   */
+  notify = (elements, options) => {
+
+    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
+
+    elements = this._test(identifier, 'notify', `notify-win-${identifier}`, elements);
+
+    return {
+      code: `
+  <div class="divTitle" id="notify-win-${identifier}">
+    <h1>Suas notificações</h1>
+
+    <h3>
+      Comentários: ${elements.comentarios} <br>
+      Curtidas: ${elements.curtidas} <br>
+      Compartilhamentos: ${elements.Compartilhamentos}
+    </h3>
+  </div>
+`,
+      ids: {
+        notify: `notify-win-${identifier}`,
+      },
+    }
   } // ========================================
 
 
