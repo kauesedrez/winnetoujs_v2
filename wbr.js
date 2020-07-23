@@ -53,9 +53,16 @@ async function createConstructosClass() {
 
     let resultadoFinal = `
     import WinnetouBase from "./_winnetouBase.js";
-    export default class Constructos extends WinnetouBase {
+
+    /**
+     * WinnetouJs Main Class
+     * 
+     */
+    class Winnetou extends WinnetouBase {
       ${resultado}
     }
+
+    export const W = new Winnetou();
     `;
 
     resultadoFinal = beautify(resultadoFinal, {
@@ -66,7 +73,7 @@ async function createConstructosClass() {
     // agora tenho a class Constructos pronta na variavel resultadoFinal
     // agora tenho que salvar o arquivo
 
-    await fs.outputFile("./_generatedConstructos.js", resultadoFinal);
+    await fs.outputFile("./winnetou.js", resultadoFinal);
 
     console.log("\n\n\nConstructos Class gerado com sucesso.");
   });
@@ -91,7 +98,9 @@ async function transformarConstructo(arquivo) {
         Array.from(componentes).forEach(componente => {
           let descri = componente.getAttribute("description");
           let constructo = componente.innerHTML;
-          let jsdoc = "\n\n/**\n";
+          let jsdoc =
+            "\n\n// ========================================\n\n\n";
+          jsdoc += "\n\n/**\n";
           jsdoc += `\t* ${descri || ""}\n`;
           let elementsObrigatorio = false;
           let jsdoc2 = "";
@@ -104,6 +113,7 @@ async function transformarConstructo(arquivo) {
           // id automaticamente, win-simpleDiv-1
 
           let id = constructo.match(/\[\[\s?(.*?)\s?\]\]/)[1];
+          let pureId = id + "-win-${identifier}";
 
           //verifica se o id é repetido
           let verifica = idList.filter(data => data.id === id);
@@ -128,23 +138,28 @@ async function transformarConstructo(arquivo) {
           // ids replace ===============================
           // ===========================================
 
-          /*
           // Isso aqui para retornar os ids
 
           var regId = /\[\[\s*?(.*?)\s*?\]\]/g;
           var matchIds = constructo.match(regId);
-          matchIds = matchIds.map(item => item.replace("[[", "").replace("]]", ""));
-          matchIds = matchIds.map(item => "win-" + item + "-${identifier}");
+          var ids = "ids:{";
+          matchIds = matchIds.map(item =>
+            item.replace("[[", "").replace("]]", "")
+          );
+          matchIds = matchIds.map(
+            item => item + "-win-${identifier}"
+          );
 
-           matchIds.forEach(item => {
-             let nome = item.split("-win-")[0];
-             retorno[nome] = "#" + item;
-           });
-           */
+          matchIds.forEach(item => {
+            let nome = item.split("-win-")[0];
+            ids += nome + ":`" + item + "`,";
+          });
+
+          ids += "},";
 
           constructo = constructo.replace(
             /\[\[\s*?(.*?)\s*?\]\]/g,
-            "win-$1-${identifier}"
+            "$1-win-${identifier}"
           );
 
           // ===========================================
@@ -192,7 +207,7 @@ async function transformarConstructo(arquivo) {
             l(el);
             l(obrigatorio ? "obrigatorio" : "opcional", comentario);
 
-            jsdoc2 += `\t* @param {string${
+            jsdoc2 += `\t* @param {any${
               obrigatorio ? "" : "="
             }} elements.${el} ${comentario.trim()}\n`;
 
@@ -213,7 +228,7 @@ async function transformarConstructo(arquivo) {
           jsdoc += jsdoc2;
 
           jsdoc += "\t* @param {object} [options]\n";
-          jsdoc += "\t* @param {string=} options.identifier\n";
+          jsdoc += "\t* @param {any=} options.identifier\n";
           jsdoc += "\t*/\n";
 
           // agora tenho que transformar o componente em metodo
@@ -221,12 +236,17 @@ async function transformarConstructo(arquivo) {
             jsdoc +
             id +
             " = (elements, options) => {" +
-            "this._test(elements);" +
-            "let identifier = this._getIdentifier(options?options.identifier || 'notSet':'notSet');" +
-            "return `" +
+            "\n\nlet identifier = this._getIdentifier(options?options.identifier || 'notSet':'notSet');" +
+            "\n\nelements = this._test(identifier,'" +
+            id +
+            "',`" +
+            pureId +
+            "`,elements);" +
+            "\n\nreturn {code:`" +
             constructo +
-            "`;" +
-            "}" +
+            "`," +
+            ids +
+            "}}" +
             " ";
 
           retornoTotal += retorno;

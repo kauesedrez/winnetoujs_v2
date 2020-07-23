@@ -1,20 +1,32 @@
-import { W } from "./winnetouv2.js";
+import { W } from "./winnetou.js";
+// Sempre use a extensão .js para evitar erros
 
-let a = W.simpleDiv({
-  titulo: "sou um titulo",
-  texto: "sou um texto",
+let appTexto = W.testeMutables({
+  titulo: {
+    mutable: "texto",
+  },
+  texto: "escreva aqui",
+  action: "saveMutable()",
 });
 
-console.log(a);
+W.create(appTexto.code, "#app");
 
-let b = W.simpleDiv(
-  {
-    titulo: "sou um titulo 2",
-    texto: "sou um texto",
-  },
-  {
-    identifier: "divLogin",
-  }
-);
+// vai retornar o appTexto.code;
 
-console.log(b);
+// let appTexto = W.testeMutables({
+//   titulo: "App Texto",
+//   texto: W.getMutable("texto") || "",
+//   action: "saveMutable()",
+// });
+
+// W.create(appTexto.code, "#app");
+
+// @ts-ignore
+window.saveMutable = function saveMutable() {
+  // @ts-ignore
+  let texto = document.getElementById(appTexto.ids.text).value;
+
+  W.setMutable("texto", texto);
+
+  console.log("salvo com sucesso");
+};
