@@ -38,3 +38,5 @@ window.compartilhar = () => {
   c++;
   W.setMutable("compartilhamentos", c.toString());
 };
+
+W.select("button").css("backgroundColor", "red");

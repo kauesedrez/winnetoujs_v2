@@ -161,4 +161,179 @@ export default class WinnetouBase {
       ele_.replaceChild(new_, old_);
     }
   }
+
+  /**
+   * Select the indicated element
+   * @param {string} selector html element. A tag, id ou class.
+   */
+  select(selector = "") {
+    var el;
+
+    const obj = {
+      /**
+       * @param {string} selector
+       */
+      getEl(selector) {
+        if (el) return el;
+        else {
+          //
+          if (selector.includes(" ")) {
+            return document.querySelectorAll(selector);
+          }
+          //
+          else if (selector.includes("#")) {
+            selector = selector.replace("#", "");
+            return [document.getElementById(selector)];
+          }
+          //
+          else if (selector.includes(".")) {
+            selector = selector.replace(".", "");
+            return Array.from(
+              document.getElementsByClassName(selector)
+            );
+          }
+          //
+          else {
+            if (selector.includes("-win-")) {
+              selector = selector.replace("#", "");
+              return [document.getElementById(selector)];
+            }
+
+            return Array.from(
+              document.getElementsByTagName(selector)
+            );
+          }
+        }
+      },
+      remove() {
+        el.forEach(item => {
+          item.remove();
+        });
+        return this;
+      },
+
+      html(texto) {
+        el.forEach(item => {
+          item.innerHTML = texto;
+        });
+        return this;
+      },
+      getHtml() {
+        return el[0].innerHTML;
+      },
+      getText() {
+        return el[0].textContent;
+      },
+      append(texto) {
+        // el.innerHTML = texto + el.innerHTML;
+        el.forEach(item => {
+          item.innerHTML += texto;
+        });
+        return this;
+      },
+      prepend(texto) {
+        // el.innerHTML = texto + el.innerHTML;
+        el.forEach(item => {
+          item.innerHTML = texto + item.innerHTML;
+        });
+        return this;
+      },
+      /**
+       * @param {string | number} property
+       * @param {string | number} value
+       */
+      css(property, value) {
+        el.forEach(item => {
+          try {
+            // @ts-ignore
+            if (typeof value == "number") value += "px";
+            item.style[property] = value;
+          } catch (e) {}
+        });
+        return this;
+      },
+      toggleClass(classe) {
+        el.forEach(item => {
+          item.classList.toggle(classe);
+        });
+        return this;
+      },
+      addClass(classe) {
+        el.forEach(item => {
+          item.classList.add(classe);
+        });
+        return this;
+      },
+      removeClass(classe) {
+        el.forEach(item => {
+          item.classList.remove(classe);
+        });
+        return this;
+      },
+      hide() {
+        el.forEach(item => {
+          item.classList.add("winnetou_display_none");
+        });
+        return this;
+      },
+      show() {
+        el.forEach(item => {
+          item.classList.remove("winnetou_display_none");
+
+          if (getComputedStyle(item).display == "none") {
+            item.style.display = "initial";
+          }
+        });
+        return this;
+      },
+      getWidth() {
+        return el[0].getBoundingClientRect().width;
+      },
+      getHeight() {
+        return el[0].getBoundingClientRect().height;
+      },
+      getLeft() {
+        return el[0].offsetLeft;
+      },
+      getTop() {
+        return el[0].offsetTop;
+      },
+      getGlobalPosition() {
+        return el[0].getBoundingClientRect();
+      },
+      getVal() {
+        return el[0].value;
+      },
+      setVal(value) {
+        el.forEach(item => {
+          item.value = value;
+          if ("createEvent" in document) {
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent("change", false, true);
+            item.dispatchEvent(evt);
+          } else item.fireEvent("onchange");
+        });
+        return this;
+      },
+      setAttr(attr, value) {
+        el.forEach(item => {
+          item.setAttribute(attr, value);
+        });
+        return this;
+      },
+      getAttr(attr) {
+        return el[0].getAttribute(attr);
+      },
+      isChecked() {
+        return el[0].checked;
+      },
+      getFile() {
+        return el[0].files[0];
+      },
+    };
+
+    el = obj.getEl(selector);
+
+    return obj;
+  }
 }
