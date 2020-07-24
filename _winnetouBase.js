@@ -24,6 +24,28 @@ export default class WinnetouBase {
      * @type {array}
      */
     this.usingMutable = [];
+
+    /**
+     * Object that will store routes on createRoutes
+     * @protected
+     * @type {object}
+     */
+    this.routes = {};
+
+    /**
+     * Object that will store the separated routes from createRoutes
+     * @protected
+     * @type {object}
+     */
+    this.paramRoutes = {};
+
+    /**
+     * Object that provides options when createRoutes, like
+     * a standard function to be called when onBack is pressed
+     * @protected
+     * @type {object}
+     */
+    this.routesOptions = {};
   }
 
   /**
@@ -211,7 +233,6 @@ export default class WinnetouBase {
         });
         return this;
       },
-
       html(texto) {
         el.forEach(item => {
           item.innerHTML = texto;
@@ -225,7 +246,6 @@ export default class WinnetouBase {
         return el[0].textContent;
       },
       append(texto) {
-        // el.innerHTML = texto + el.innerHTML;
         el.forEach(item => {
           item.innerHTML += texto;
         });
@@ -335,5 +355,33 @@ export default class WinnetouBase {
     el = obj.getEl(selector);
 
     return obj;
+  }
+  /**
+   * Method for store dinamic Winnetou Routes
+   * @param  {object} obj
+   * @param  {object} [options]
+   */
+  createRoutes(obj, options) {
+    this.routes = obj;
+    this.routesOptions = options;
+
+    Object.keys(this.routes).forEach(key => {
+      if (key.includes("/:")) {
+        // [ok] /protocolo/:numero -->
+        // Todo:
+        // /perfil/:usuario/:acao --> ainda não está pronto
+
+        // Preciso separa em duas variáveis
+
+        let separatedRoutes = key.split("/:");
+
+        // armazeno o 0 como identificador de rota especial
+
+        this.paramRoutes[separatedRoutes[0]] = separatedRoutes[1];
+      }
+    });
+
+    console.log("this.routes :>> ", this.routes);
+    console.log("this.routesOptions :>> ", this.routesOptions);
   }
 }

@@ -8,7 +8,7 @@ const compiler = webpack({
   entry: "./bundleTeste.js",
   output: {
     path: path.resolve(__dirname, "release"),
-    filename: "winBundleRelease_2.js",
+    filename: "winBundleRelease_3.js",
   },
   module: {
     rules: [
