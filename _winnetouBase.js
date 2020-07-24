@@ -4,7 +4,7 @@
 export default class WinnetouBase {
   constructor() {
     /**
-     * Random id when no specific indentifier is given
+     * Incrementable id when no specific indentifier is given
      * @protected
      * @type {number}
      */
@@ -55,7 +55,17 @@ export default class WinnetouBase {
           elements,
         };
 
-        this.usingMutable[elements[item].mutable].push(obj);
+        // apenas faz o push caso o pureId ainda não exista
+
+        if (
+          this.usingMutable[elements[item].mutable].filter(
+            x => x.pureId == pureId
+          ).length > 0
+        ) {
+          // do nothing
+        } else {
+          this.usingMutable[elements[item].mutable].push(obj);
+        }
 
         retorno[item] = val;
       }
@@ -103,8 +113,6 @@ export default class WinnetouBase {
    * @param {boolean=} localStorage bool to save the state on the machine at the user, true by default
    */
   setMutable(mutable, value, localStorage = true) {
-    var $this = this;
-
     if (localStorage) {
       window.localStorage.setItem(`mutable_${mutable}`, value);
     } else {
@@ -113,14 +121,11 @@ export default class WinnetouBase {
 
     if (this.usingMutable[mutable]) {
       let tmpArr = this.usingMutable[mutable];
+
       this.usingMutable[mutable] = [];
 
       tmpArr.forEach(item => {
         let old_ = document.getElementById(item.pureId);
-
-        // deveria manter o mesmo id ...
-        // como obter isso
-        // basta salvar o identifier
 
         let new_ = document.createRange().createContextualFragment(
           this[item.id](item.elements, {
