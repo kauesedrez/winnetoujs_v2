@@ -12,9 +12,9 @@ class Winnetou extends WinnetouBase {
 
   /**
    * Div simples para inserção de texto
-   * @param {object} [elements]
+   * @param {object} elements
    * @param {any=} elements.titulo Titulo da div
-   * @param {any=} elements.texto Texto a ser apresentado na simpleDiv
+   * @param {any} elements.texto Texto a ser apresentado na simpleDiv
    * @param {object} [options]
    * @param {any=} options.identifier
    */
@@ -29,7 +29,7 @@ class Winnetou extends WinnetouBase {
   <div id="simpleDiv-win-${identifier}" class="divGeral">
     <h1 id="h1TiTle-win-${identifier}">${elements.titulo || ""}</h1>
     <p id="pTexto-win-${identifier}">
-      ${elements.texto || ""}
+      ${elements.texto}
     </p>
   </div>
 `,
@@ -47,7 +47,7 @@ class Winnetou extends WinnetouBase {
 
 
   /**
-   * Span padrão para titulos de sessões
+   * Span padrão para títulos de sessões
    * @param {object} elements
    * @param {any} elements.texto 
    * @param {object} [options]
@@ -80,6 +80,7 @@ class Winnetou extends WinnetouBase {
    * Post
    * @param {object} elements
    * @param {any} elements.nome 
+   * @param {any} elements.actionProfile 
    * @param {any} elements.post 
    * @param {any} elements.comentarios 
    * @param {any} elements.curtidas 
@@ -97,6 +98,7 @@ class Winnetou extends WinnetouBase {
       code: `
   <div class="divTitle" id="post-win-${identifier}">
     <h1>${elements.nome}</h1>
+    <button onclick="${elements.actionProfile}">Ver perfil</button>
     <h2>${elements.post}</h2>
     <h3>
       Comentários: ${elements.comentarios} | Curtidas: ${elements.curtidas} |
@@ -149,6 +151,36 @@ class Winnetou extends WinnetouBase {
 `,
       ids: {
         notify: `notify-win-${identifier}`,
+      },
+    }
+  } // ========================================
+
+
+
+
+  /**
+   * 
+   * @param {object} elements
+   * @param {any} elements.nome 
+   * @param {any} elements.descri 
+   * @param {object} [options]
+   * @param {any=} options.identifier
+   */
+  profile = (elements, options) => {
+
+    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
+
+    elements = this._test(identifier, 'profile', `profile-win-${identifier}`, elements);
+
+    return {
+      code: `
+  <div id="profile-win-${identifier}">
+    <h1>${elements.nome}</h1>
+    <h2>${elements.descri}</h2>
+  </div>
+`,
+      ids: {
+        profile: `profile-win-${identifier}`,
       },
     }
   } // ========================================

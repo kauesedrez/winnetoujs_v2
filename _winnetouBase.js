@@ -3,8 +3,11 @@
  */
 export default class WinnetouBase {
   constructor() {
+    // @ts-ignore
+    window.W = this;
+
     /**
-     * Incrementable id when no specific indentifier is given
+     * Incrementally id when no specific identifier is given
      * @protected
      * @type {number}
      */
@@ -46,6 +49,48 @@ export default class WinnetouBase {
      * @type {object}
      */
     this.routesOptions = {};
+
+    /**
+     * POPSTATE NATIVO
+     */
+    document.addEventListener("keydown", event => {
+      if (event.which === 27) {
+        history.go(-1);
+      }
+    });
+
+    if (window.history && window.history.pushState) {
+      window.onpopstate = event => {
+        event.preventDefault();
+
+        if (this.routesOptions?.onBack) {
+          try {
+            this.routesOptions.onBack();
+          } catch (e) {
+            console.error(
+              `Winnetou Error, id: CR001\nThe onBack option in createRoutes() is not valid. Please use a function. \n\nOriginal Error: `,
+              e
+            );
+          }
+        }
+
+        if (event.state == null) {
+          this.routes["/"]();
+        } else {
+          try {
+            this.callRoute(event.state);
+          } catch (e) {
+            console.error(
+              `WinnetouJs Error, id: CR002\nGiven route is not available "${event.state}". Please verify given route. Original Error: ${e}`
+            );
+          }
+        }
+      };
+    } else {
+      // $debug === "debug"
+      //   ? console.log("History Api not allowed in this browser.")
+      //   : null;
+    }
   }
 
   /**
@@ -356,8 +401,9 @@ export default class WinnetouBase {
 
     return obj;
   }
+
   /**
-   * Method for store dinamic Winnetou Routes
+   * Method for store dynamic Winnetou Routes
    * @param  {object} obj
    * @param  {object} [options]
    */
@@ -367,9 +413,9 @@ export default class WinnetouBase {
 
     Object.keys(this.routes).forEach(key => {
       if (key.includes("/:")) {
-        // [ok] /protocolo/:numero -->
+        // [ok] /protocolo/:number -->
         // Todo:
-        // /perfil/:usuario/:acao --> ainda não está pronto
+        // /perfil/:user/:action --> ainda não está pronto
 
         // Preciso separa em duas variáveis
 
@@ -383,5 +429,77 @@ export default class WinnetouBase {
 
     console.log("this.routes :>> ", this.routes);
     console.log("this.routesOptions :>> ", this.routesOptions);
+  }
+
+  /**
+   * Navigate between Winnetou routes
+   * @param {string} url Path already defined in createRoutes method
+   */
+  navigate(url) {
+    if (window.history && window.history.pushState) {
+      this.callRoute(url);
+      this.pushState(url);
+    }
+  }
+
+  /**
+   * Allows WinnetouJs to pass between pages on the app.
+   * Needs a valid const routes already set.
+   * Do not changes URL.
+   * @param {string} route function already set in createRoutes
+   */
+  pass(route) {
+    if (window.history && window.history.pushState) {
+      this.callRoute(route);
+      this.pushStateInteraction(route);
+    } else {
+      // this.debug === "debug"
+      //   ? console.log("History Api not allowed in this browser.")
+      //   : null;
+    }
+  }
+
+  /** @private */
+  pushStateInteraction(func) {
+    // history.replaceState(func, null);
+    history.pushState(func, null);
+  }
+  /** @private */
+  callRoute(url) {
+    try {
+      let separatedRoutes = url.split("/");
+
+      if (separatedRoutes.length > 2) {
+        if (
+          Object.keys(this.paramRoutes).indexOf(
+            "/" + separatedRoutes[1]
+          ) != -1
+        ) {
+          // existe a ocorrência
+
+          this.routes[
+            `/${separatedRoutes[1]}/:${
+              this.paramRoutes["/" + separatedRoutes[1]]
+            }`
+          ](separatedRoutes[2]);
+        } else {
+          this.routes[url]();
+        }
+      } else {
+        this.routes[url]();
+      }
+    } catch (e) {
+      try {
+        this.routes["/404"]();
+      } catch (e) {}
+    }
+  }
+  /** @private */
+  pushState(url) {
+    try {
+      history.pushState(url, "", url);
+    } catch (e) {
+      history.pushState(url, null);
+    }
   }
 }

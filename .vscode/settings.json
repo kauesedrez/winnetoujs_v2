@@ -3,5 +3,9 @@
         "activityBar.background": "#0F3332",
         "titleBar.activeBackground": "#164746",
         "titleBar.activeForeground": "#F5FCFC"
-    }
+    },
+    "cSpell.words": [
+        "Compartilhamentos",
+        "comentarios"
+    ]
 }

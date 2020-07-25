@@ -2,6 +2,7 @@ import { W } from "./winnetou.js";
 
 export default function render() {
   let post = W.post({
+    actionProfile: "W.pass('profile')",
     nome: "Kaue",
     post: "Entendendo de vez o WinnetouJs",
     comentarios: { mutable: "comentarios" },
@@ -15,10 +16,10 @@ export default function render() {
     Compartilhamentos: { mutable: "compartilhamentos" },
   });
 
-  W.create(post.code, "#app");
+  W.create(post.code, "#app", { clear: true });
   W.create(notify.code, "#app");
 
-  // @ts-ignore
+  //@ts-ignore
   window.comentar = () => {
     let c = parseInt(W.getMutable("comentarios") || "0");
     c++;

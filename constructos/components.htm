@@ -6,7 +6,7 @@
   <div id="[[simpleDiv]]" class="divGeral">
     <h1 id="[[h1TiTle]]">{{?titulo%Titulo da div}}</h1>
     <p id="[[pTexto]]">
-      {{?texto % Texto a ser apresentado na simpleDiv}}
+      {{texto % Texto a ser apresentado na simpleDiv}}
     </p>
   </div>
 </div>
@@ -14,7 +14,7 @@
 <!--div simples-->
 <div
   class="winnetou"
-  description="Span padrão para titulos de sessões"
+  description="Span padrão para títulos de sessões"
 >
   <span class="spanTitle" id="[[spanTitle]]">
     {{texto}}
@@ -25,6 +25,7 @@
 <div class="winnetou" description="Post">
   <div class="divTitle" id="[[post]]">
     <h1>{{nome}}</h1>
+    <button onclick="{{actionProfile}}">Ver perfil</button>
     <h2>{{post}}</h2>
     <h3>
       Comentários: {{comentarios}} | Curtidas: {{curtidas}} |
