@@ -1,14 +1,20 @@
 import { W } from "./winnetou.js";
 import render from "./render.js";
-import profile from "./profile.js";
+import { likes, profile } from "./profile.js";
 
 export default function routes() {
   W.createRoutes(
     {
       "/": render,
-      "/profile/:cor": cor => {
-        profile(cor);
+      "/profile/:user/:post/:comment/:likes": (
+        user,
+        post,
+        comment,
+        likes
+      ) => {
+        likes(user, post, comment, likes);
       },
+      "/profile": profile,
     },
     {
       onBack: () => {

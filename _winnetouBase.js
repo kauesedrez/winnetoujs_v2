@@ -415,22 +415,18 @@ export default class WinnetouBase {
 
     Object.keys(this.routes).forEach(key => {
       if (key.includes("/:")) {
-        // [ok] /protocolo/:number -->
-        // Todo:
-        // /perfil/:user/:action --> ainda não está pronto
-
-        // Preciso separa em duas variáveis
-
         let separatedRoutes = key.split("/:");
 
-        // armazeno o 0 como identificador de rota especial
+        let functionParams = [];
+        for (let c = 1; c < separatedRoutes.length; c++) {
+          functionParams.push(separatedRoutes[c]);
+        }
 
-        this.paramRoutes[separatedRoutes[0]] = separatedRoutes[1];
+        this.paramRoutes[
+          separatedRoutes[0]
+        ] = `/:${functionParams.join("/:")}`;
       }
     });
-
-    console.log("this.routes :>> ", this.routes);
-    console.log("this.routesOptions :>> ", this.routesOptions);
   }
 
   /**
@@ -491,23 +487,32 @@ export default class WinnetouBase {
    */
   callRoute(url) {
     try {
-      let separatedRoutes = url.split("/");
+      let routesFromUrl = url.split("/");
 
-      console.log("separatedRoutes :>> ", separatedRoutes);
-
-      if (separatedRoutes.length > 2) {
+      if (routesFromUrl.length > 2) {
         if (
           Object.keys(this.paramRoutes).indexOf(
-            "/" + separatedRoutes[1]
+            "/" + routesFromUrl[1]
           ) != -1
         ) {
           // existe a ocorrência
 
+          console.log("routesFromUrl :>> ", routesFromUrl);
+          console.log("this.routes :>> ", this.routes);
+          console.log("this.paramRoutes :>> ", this.paramRoutes);
+
+          let functionParams = [];
+          for (let c = 2; c < routesFromUrl.length; c++) {
+            functionParams.push(routesFromUrl[c]);
+          }
+
+          console.log("functionParams :>> ", functionParams);
+
           this.routes[
-            `/${separatedRoutes[1]}/:${
-              this.paramRoutes["/" + separatedRoutes[1]]
+            `/${routesFromUrl[1]}${
+              this.paramRoutes["/" + routesFromUrl[1]]
             }`
-          ](separatedRoutes[2]);
+          ](...functionParams);
         } else {
           this.routes[url]();
         }

@@ -81,6 +81,7 @@ class Winnetou extends WinnetouBase {
    * @param {object} elements
    * @param {any} elements.nome 
    * @param {any} elements.actionProfile 
+   * @param {any} elements.actionMyProfile 
    * @param {any} elements.post 
    * @param {any} elements.comentarios 
    * @param {any} elements.curtidas 
@@ -98,7 +99,8 @@ class Winnetou extends WinnetouBase {
       code: `
   <div class="divTitle" id="post-win-${identifier}">
     <h1>${elements.nome}</h1>
-    <button onclick="${elements.actionProfile}">Ver perfil</button>
+    <button onclick="${elements.actionProfile}">Ver likes</button>
+    <button onclick="${elements.actionMyProfile}">Ver perfil</button>
     <h2>${elements.post}</h2>
     <h3>
       Comentários: ${elements.comentarios} | Curtidas: ${elements.curtidas} |
@@ -159,6 +161,34 @@ class Winnetou extends WinnetouBase {
 
 
   /**
+   * Span padrão para titulos de sessões
+   * @param {object} elements
+   * @param {any} elements.repetido 
+   * @param {object} [options]
+   * @param {any=} options.identifier
+   */
+  spanTitle2 = (elements, options) => {
+
+    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
+
+    elements = this._test(identifier, 'spanTitle2', `spanTitle2-win-${identifier}`, elements);
+
+    return {
+      code: `
+  <span class="spanTitle" id="spanTitle2-win-${identifier}">
+    ${elements.repetido}
+  </span>
+`,
+      ids: {
+        spanTitle2: `spanTitle2-win-${identifier}`,
+      },
+    }
+  } // ========================================
+
+
+
+
+  /**
    * 
    * @param {object} elements
    * @param {any} elements.nome 
@@ -181,34 +211,6 @@ class Winnetou extends WinnetouBase {
 `,
       ids: {
         profile: `profile-win-${identifier}`,
-      },
-    }
-  } // ========================================
-
-
-
-
-  /**
-   * Span padrão para titulos de sessões
-   * @param {object} elements
-   * @param {any} elements.repetido 
-   * @param {object} [options]
-   * @param {any=} options.identifier
-   */
-  spanTitle2 = (elements, options) => {
-
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'spanTitle2', `spanTitle2-win-${identifier}`, elements);
-
-    return {
-      code: `
-  <span class="spanTitle" id="spanTitle2-win-${identifier}">
-    ${elements.repetido}
-  </span>
-`,
-      ids: {
-        spanTitle2: `spanTitle2-win-${identifier}`,
       },
     }
   } // ========================================
