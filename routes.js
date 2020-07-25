@@ -12,10 +12,10 @@ export default function routes() {
     },
     {
       onBack: () => {
-        alert("onback funcionando");
+        // alert("onback funcionando");
       },
       onGo: () => {
-        alert("ongo ok");
+        // alert("ongo ok");
       },
     }
   );

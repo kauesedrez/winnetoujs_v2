@@ -486,10 +486,14 @@ export default class WinnetouBase {
     // history.replaceState(func, null);
     history.pushState(func, null);
   }
-  /** @private */
+  /** @private
+   * W.navigate('/profile/azul')
+   */
   callRoute(url) {
     try {
       let separatedRoutes = url.split("/");
+
+      console.log("separatedRoutes :>> ", separatedRoutes);
 
       if (separatedRoutes.length > 2) {
         if (
