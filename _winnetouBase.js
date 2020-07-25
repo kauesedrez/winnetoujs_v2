@@ -406,6 +406,8 @@ export default class WinnetouBase {
    * Method for store dynamic Winnetou Routes
    * @param  {object} obj
    * @param  {object} [options]
+   * @param  {function=} options.onBack Function that will be called when user fires back button
+   * @param  {function=} options.onGo Function that will be called when user triggers a route
    */
   createRoutes(obj, options) {
     this.routes = obj;
@@ -439,6 +441,16 @@ export default class WinnetouBase {
     if (window.history && window.history.pushState) {
       this.callRoute(url);
       this.pushState(url);
+      if (this.routesOptions?.onGo) {
+        try {
+          this.routesOptions.onGo();
+        } catch (e) {
+          console.error(
+            `Winnetou Error, id: CR001\nThe onGo option in createRoutes() is not valid. Please use a function. \n\nOriginal Error: `,
+            e
+          );
+        }
+      }
     }
   }
 
@@ -452,6 +464,16 @@ export default class WinnetouBase {
     if (window.history && window.history.pushState) {
       this.callRoute(route);
       this.pushStateInteraction(route);
+      if (this.routesOptions?.onGo) {
+        try {
+          this.routesOptions.onGo();
+        } catch (e) {
+          console.error(
+            `Winnetou Error, id: CR001\nThe onGo option in createRoutes() is not valid. Please use a function. \n\nOriginal Error: `,
+            e
+          );
+        }
+      }
     } else {
       // this.debug === "debug"
       //   ? console.log("History Api not allowed in this browser.")

@@ -1,8 +1,8 @@
 import { W } from "./winnetou.js";
 
-export default function profile() {
+export default function profile(cor) {
   let profile = W.profile({
-    nome: "Winnetou Kaue",
+    nome: "Winnetou Kaue " + cor,
     descri: "Software developer | Cedros Development CEO",
   });
 

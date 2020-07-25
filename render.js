@@ -2,7 +2,7 @@ import { W } from "./winnetou.js";
 
 export default function render() {
   let post = W.post({
-    actionProfile: "W.pass('profile')",
+    actionProfile: "W.navigate('/profile/azul')",
     nome: "Kaue",
     post: "Entendendo de vez o WinnetouJs",
     comentarios: { mutable: "comentarios" },
