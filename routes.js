@@ -10,9 +10,9 @@ export default function routes() {
         user,
         post,
         comment,
-        likes
+        likes_
       ) => {
-        likes(user, post, comment, likes);
+        likes(user, post, comment, likes_);
       },
       "/profile": profile,
     },

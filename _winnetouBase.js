@@ -38,9 +38,9 @@ export default class WinnetouBase {
     /**
      * Object that will store the separated routes from createRoutes
      * @protected
-     * @type {object}
+     * @type {array}
      */
-    this.paramRoutes = {};
+    this.paramRoutes = [];
 
     /**
      * Object that provides options when createRoutes, like
@@ -413,19 +413,13 @@ export default class WinnetouBase {
     this.routes = obj;
     this.routesOptions = options;
 
-    Object.keys(this.routes).forEach(key => {
-      if (key.includes("/:")) {
-        let separatedRoutes = key.split("/:");
-
-        let functionParams = [];
-        for (let c = 1; c < separatedRoutes.length; c++) {
-          functionParams.push(separatedRoutes[c]);
-        }
-
-        this.paramRoutes[
-          separatedRoutes[0]
-        ] = `/:${functionParams.join("/:")}`;
-      }
+    Object.keys(this.routes).forEach(route => {
+      let segment = route.split("/");
+      let size = segment.length;
+      this.paramRoutes.push({
+        root: route,
+        size,
+      });
     });
   }
 
@@ -486,30 +480,41 @@ export default class WinnetouBase {
    * W.navigate('/profile/azul')
    */
   callRoute(url) {
+    console.log("url :>> ", url);
     try {
-      let routesFromUrl = url.split("/");
+      let splittedUrl = url.split("/");
+      let size = splittedUrl.length;
 
-      if (routesFromUrl.length > 2) {
-        if (
-          Object.keys(this.paramRoutes).indexOf(
-            "/" + routesFromUrl[1]
-          ) != -1
-        ) {
-          let functionParams = [];
-          for (let c = 2; c < routesFromUrl.length; c++) {
-            functionParams.push(routesFromUrl[c]);
+      // vai verificar nas paramRoutes quais tem size == 2 e comparar
+      let filter = this.paramRoutes.filter(
+        data => data.size === size
+      );
+      console.log("filter :>> ", filter);
+      for (let i = 0; i < filter.length; i++) {
+        let root = filter[i].root.split("/");
+
+        let correctMatch = true;
+        let paramStore = [];
+        for (let j = 1; j < root.length; j++) {
+          if (root[j] !== splittedUrl[j]) {
+            correctMatch = false;
+            if (root[j].includes(":")) {
+              correctMatch = true;
+              paramStore.push(splittedUrl[j]);
+            } else {
+              correctMatch = false;
+              break;
+              // aqui ja deveria interromper o for J
+              // pois nao pode ter nenhum correctMatch false
+            }
           }
-
-          this.routes[
-            `/${routesFromUrl[1]}${
-              this.paramRoutes["/" + routesFromUrl[1]]
-            }`
-          ](...functionParams);
-        } else {
-          this.routes[url]();
         }
-      } else {
-        this.routes[url]();
+
+        if (correctMatch) {
+          console.log("chamou o routes", filter[i].root, paramStore);
+          this.routes[filter[i].root](...paramStore);
+          return;
+        }
       }
     } catch (e) {
       try {
