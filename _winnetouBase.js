@@ -495,18 +495,10 @@ export default class WinnetouBase {
             "/" + routesFromUrl[1]
           ) != -1
         ) {
-          // existe a ocorrência
-
-          console.log("routesFromUrl :>> ", routesFromUrl);
-          console.log("this.routes :>> ", this.routes);
-          console.log("this.paramRoutes :>> ", this.paramRoutes);
-
           let functionParams = [];
           for (let c = 2; c < routesFromUrl.length; c++) {
             functionParams.push(routesFromUrl[c]);
           }
-
-          console.log("functionParams :>> ", functionParams);
 
           this.routes[
             `/${routesFromUrl[1]}${
