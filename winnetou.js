@@ -155,6 +155,35 @@ class Winnetou extends WinnetouBase {
         notify: `notify-win-${identifier}`,
       },
     }
+  }
+
+  // ========================================
+
+
+
+
+  /**
+   * 
+   * @param {object} elements
+   * @param {any} elements.action 
+   * @param {any} elements.text 
+   * @param {object} [options]
+   * @param {any=} options.identifier
+   */
+  btSimples = (elements, options) => {
+
+    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
+
+    elements = this._test(identifier, 'btSimples', `btSimples-win-${identifier}`, elements);
+
+    return {
+      code: `
+  <button id="btSimples-win-${identifier}" onclick="${elements.action}">${elements.text}</button>
+`,
+      ids: {
+        btSimples: `btSimples-win-${identifier}`,
+      },
+    }
   } // ========================================
 
 

@@ -480,7 +480,6 @@ export default class WinnetouBase {
    * W.navigate('/profile/azul')
    */
   callRoute(url) {
-    console.log("url :>> ", url);
     try {
       let splittedUrl = url.split("/");
       let size = splittedUrl.length;
@@ -489,7 +488,11 @@ export default class WinnetouBase {
       let filter = this.paramRoutes.filter(
         data => data.size === size
       );
-      console.log("filter :>> ", filter);
+
+      if (filter.length === 0) {
+        this.notFound();
+      }
+
       for (let i = 0; i < filter.length; i++) {
         let root = filter[i].root.split("/");
 
@@ -510,18 +513,29 @@ export default class WinnetouBase {
           }
         }
 
+        console.log(i, filter.length);
         if (correctMatch) {
-          console.log("chamou o routes", filter[i].root, paramStore);
           this.routes[filter[i].root](...paramStore);
           return;
+        } else if (i === filter.length - 1) {
+          this.notFound();
         }
       }
     } catch (e) {
-      try {
-        this.routes["/404"]();
-      } catch (e) {}
+      this.notFound();
     }
   }
+
+  /** @private */
+  notFound() {
+    try {
+      this.routes["/404"]();
+    } catch (e) {
+      document.write("Not Found");
+      console.log("Not Found");
+    }
+  }
+
   /** @private */
   pushState(url) {
     try {

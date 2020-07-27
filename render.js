@@ -21,6 +21,22 @@ export default function render() {
   W.create(post.code, "#app", { clear: true });
   W.create(notify.code, "#app");
 
+  W.create(
+    W.btSimples({
+      text: "Camila Profile",
+      action: "W.navigate('/camila')",
+    }).code,
+    "#app"
+  );
+
+  W.create(
+    W.btSimples({
+      text: "Camila Amigos",
+      action: "W.navigate('/camila/friends')",
+    }).code,
+    "#app"
+  );
+
   //@ts-ignore
   window.comentar = () => {
     let c = parseInt(W.getMutable("comentarios") || "0");

@@ -17,3 +17,21 @@ export function profile() {
 
   W.create(profile.code, "#app", { clear: true });
 }
+
+export function guestProfile(nome) {
+  let profile = W.profile({
+    nome,
+    descri: "Profile de " + nome,
+  });
+
+  W.create(profile.code, "#app", { clear: true });
+}
+
+export function notFound() {
+  let profile = W.profile({
+    nome: "404 not found",
+    descri: "Lost in space",
+  });
+
+  W.create(profile.code, "#app", { clear: true });
+}

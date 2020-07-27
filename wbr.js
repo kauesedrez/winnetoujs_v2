@@ -92,7 +92,7 @@ async function transformarConstructo(arquivo) {
 
         // transforma o html em método
         let dom = htmlParser.parse(data);
-        let componentes = dom.querySelectorAll(".winnetou");
+        let componentes = dom.querySelectorAll("winnetou");
         let retornoTotal = "";
 
         Array.from(componentes).forEach(componente => {

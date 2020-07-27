@@ -1,5 +1,5 @@
 <!--simpleDiv-->
-<div
+<winnetou
   class="winnetou"
   description="Div simples para inserção de texto"
 >
@@ -9,20 +9,20 @@
       {{texto % Texto a ser apresentado na simpleDiv}}
     </p>
   </div>
-</div>
+</winnetou>
 
 <!--div simples-->
-<div
+<winnetou
   class="winnetou"
   description="Span padrão para títulos de sessões"
 >
   <span class="spanTitle" id="[[spanTitle]]">
     {{texto}}
   </span>
-</div>
+</winnetou>
 
 <!--post-->
-<div class="winnetou" description="Post">
+<winnetou class="winnetou" description="Post">
   <div class="divTitle" id="[[post]]">
     <h1>{{nome}}</h1>
     <button onclick="{{actionProfile}}">Ver likes</button>
@@ -38,10 +38,10 @@
       <button onclick="compartilhar()">Compartilhar</button>
     </div>
   </div>
-</div>
+</winnetou>
 
 <!--post-->
-<div class="winnetou" description="Post">
+<winnetou class="winnetou" description="Post">
   <div class="divTitle" id="[[notify]]">
     <h1>Suas notificações</h1>
 
@@ -51,4 +51,8 @@
       Compartilhamentos: {{Compartilhamentos}}
     </h3>
   </div>
-</div>
+</winnetou>
+
+<winnetou>
+  <button id="[[btSimples]]" onclick="{{action}}">{{text}}</button>
+</winnetou>
