@@ -6,7 +6,7 @@
  *
  */
 
-const Config = require("./win.config.js");
+const Config = require("./win.config.json");
 const fs = require("fs-extra");
 const path = require("path");
 const recursive = require("recursive-readdir");
@@ -14,6 +14,7 @@ const htmlParser = require("node-html-parser");
 const { default: Matcher } = require("node-html-parser/dist/matcher");
 const beautify = require("js-beautify").js;
 const escapeStringRegexp = require("escape-string-regexp");
+const xml = require("xml-parse");
 
 var idList = [];
 
@@ -21,6 +22,7 @@ var idList = [];
 createConstructosClass();
 
 function l(a, b) {
+  return;
   a || b ? console.log("\n============") : null;
   a ? console.dir(a) : null;
   b ? console.log(b) : null;
@@ -32,24 +34,34 @@ function l(a, b) {
  */
 async function createConstructosClass() {
   const constructosPath = Config.constructosPath;
-  let dir = fs.readdirSync(constructosPath);
 
   let resultado = "";
 
   recursive(constructosPath, async (err, files) => {
-    // `files` is an array of file paths
-
     for (let file in files) {
-      let arquivo = files[file];
-      let ext = path.parse(path.join(__dirname, arquivo)).ext;
-      // apenas se for html ou htm
-      if (ext == ".html" || ext == ".htm") {
-        let constructoMethods = await transformarConstructo(arquivo);
-        resultado += constructoMethods;
+      try {
+        let arquivo = files[file];
+
+        if (typeof arquivo === "string") {
+          let ext = path.parse(path.join(__dirname, arquivo)).ext;
+          // apenas se for html ou htm
+          if (ext == ".html" || ext == ".htm") {
+            let constructoMethods = await transformarConstructo(
+              arquivo
+            );
+            resultado += constructoMethods;
+          }
+        }
+      } catch (e) {
+        console.log("Winnetou error", e.message);
       }
     }
 
-    // agora tenhos os metodos na variavel resultado
+    // tradução
+    let translate_ = "";
+    if (Config?.defaultLang) {
+      translate_ = await translate();
+    }
 
     let resultadoFinal = `
     import WinnetouBase from "./_winnetouBase.js";
@@ -59,6 +71,7 @@ async function createConstructosClass() {
      * 
      */
     class Winnetou extends WinnetouBase {
+      ${translate_}
       ${resultado}
     }
 
@@ -70,7 +83,7 @@ async function createConstructosClass() {
       space_in_empty_paren: true,
     });
 
-    // agora tenho a class Constructos pronta na variavel resultadoFinal
+    // agora tenho a class Constructos pronta na variável resultadoFinal
     // agora tenho que salvar o arquivo
 
     await fs.outputFile("./winnetou.js", resultadoFinal);
@@ -78,6 +91,65 @@ async function createConstructosClass() {
     console.log("\n\n\nConstructos Class gerado com sucesso.");
   });
 }
+
+async function translate() {
+  return new Promise((resolve, reject) => {
+    if (!Config?.folderName) {
+      console.error(
+        "WinnetouJs Translation Miss Configuration Error:You have to specify the name of winnetou folder in order to use the translations;"
+      );
+
+      return reject("erro");
+    }
+
+    if (Config.folderName === "/") Config.folderName = "";
+    Config.folderName = path.join(
+      __dirname,
+      Config.folderName,
+      "/translations"
+    );
+
+    let strings = "";
+    let jsdoc = "";
+
+    fs.readFile(
+      `${Config.folderName}/${Config.defaultLang}.xml`,
+      "utf-8",
+      function (err, data) {
+        let trad = xml.parse(data)[0].childNodes;
+
+        trad.forEach(item => {
+          if (item.tagName && item.childNodes[0]?.text) {
+            strings += `
+            ${item.tagName}: "${item.childNodes[0].text.trim()}",
+            `;
+            jsdoc += `
+              * @param {string} ${
+                item.tagName
+              } ${item.childNodes[0].text.trim()}
+            `;
+          }
+        });
+
+        let res = `
+        constructor(){
+          super();
+          /**
+           * Object containing the strings taken from the translation file           
+           ${jsdoc}
+           */
+          this.strings = {
+            ${strings}
+          }
+        }
+        `;
+
+        return resolve(res);
+      }
+    );
+  });
+}
+
 /**
  * Vai ler o arquivo html e transformar em um método js
  * que será colocado dentro da classe Constructos
@@ -109,7 +181,7 @@ async function transformarConstructo(arquivo) {
 
           // todo:
           // [ok] lógica dos ids
-          // ao chamar o metodo da classe Constructos tem que criar o
+          // ao chamar o método da classe Constructos tem que criar o
           // id automaticamente, win-simpleDiv-1
 
           let id = constructo.match(/\[\[\s?(.*?)\s?\]\]/)[1];

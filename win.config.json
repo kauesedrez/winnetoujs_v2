@@ -1,0 +1,7 @@
+{
+  "constructosPath": "./constructos",
+  "entry": "./main.js",
+  "out": "./release",
+  "folderName": "/",
+  "defaultLang": "en-us"
+}

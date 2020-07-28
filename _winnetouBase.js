@@ -1,6 +1,8 @@
 /**
  * WinnetouJs Base Class
  */
+
+// const Config = require("./win.config.js");
 export default class WinnetouBase {
   constructor() {
     // @ts-ignore
@@ -52,6 +54,9 @@ export default class WinnetouBase {
 
     /**@private */
     this.storedEvents = [];
+
+    /**@type {object} */
+    this.strings = {};
 
     /**
      * POPSTATE NATIVO
@@ -615,5 +620,81 @@ export default class WinnetouBase {
     this.on(clickHandler, selector, el => {
       callback(el);
     });
+  }
+
+  /**
+   * Activate translations, Must be called when application starts.
+   * @param next_ callback to app start.
+   */
+
+  async lang(next_) {
+    if (!window.localStorage.getItem("lang")) return next_();
+
+    let This = this;
+
+    let Config = await fetch("./win.config.json").then(res =>
+      res.json()
+    );
+
+    if (!Config?.folderName) {
+      console.error(
+        "WinnetouJs Translation Miss Configuration Error:You have to specify the name of winnetou folder in order to use the translations;"
+      );
+
+      return next_();
+    }
+
+    if (Config.folderName === "/") Config.folderName = "";
+
+    let defaultLang = Config?.defaultLang;
+    let localLang = window.localStorage.getItem("lang");
+    if (localLang) defaultLang = localLang;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 404) {
+        console.log(
+          "\nO arquivo ",
+          `${Config.folderName}/translations/${defaultLang}.xml`,
+          "não foi encontrado"
+        );
+      }
+
+      if (this.readyState == 4 && this.status == 200) {
+        try {
+          let trad = this.responseXML;
+          let el = trad.getElementsByTagName("winnetou");
+          let frases = el[0].childNodes;
+          frases.forEach(item => {
+            if (item.nodeName != "#text") {
+              This.strings[item.nodeName] = item.textContent;
+            }
+          });
+        } catch (e) {
+          console.log(
+            "O arquivo de tradução ",
+            `${Config.folderName}/translations/${defaultLang}.xml`,
+            " parece estar vazio ou incorreto."
+          );
+        }
+
+        return next_();
+      }
+    };
+    xhttp.open(
+      "GET",
+      `${Config.folderName}/translations/${defaultLang}.xml`,
+      true
+    );
+    xhttp.send();
+  }
+
+  /**
+   * Change language
+   * @param lang string language
+   */
+  changeLang(lang) {
+    window.localStorage.setItem("lang", lang);
+    location.reload();
   }
 }

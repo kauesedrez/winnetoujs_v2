@@ -5,7 +5,7 @@ export default function render() {
     actionMyProfile: "W.navigate('/profile')",
     actionProfile:
       "W.navigate('/profile/Winnetou/post21/comment100/likes300')",
-    nome: "Kaue",
+    nome: W.strings.welcome,
     post: "Entendendo de vez o WinnetouJs",
     comentarios: { mutable: "comentarios" },
     curtidas: { mutable: "curtidas" },
@@ -67,6 +67,16 @@ export default function render() {
     c++;
     W.setMutable("comentarios", c.toString());
   });
+  // ----------------------------------------------------------
+  // change lang
+  W.create(
+    W.btSimples({
+      text: "PT-BR",
+      action: "W.changeLang('pt-br')",
+    }).code,
+    "#app"
+  );
+
   // ----------------------------------------------------------
 
   //@ts-ignore

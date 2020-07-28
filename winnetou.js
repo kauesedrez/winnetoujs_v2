@@ -5,6 +5,26 @@ import WinnetouBase from "./_winnetouBase.js";
  * 
  */
 class Winnetou extends WinnetouBase {
+
+  constructor() {
+    super();
+    /**
+     * Object containing the strings taken from the translation file           
+     
+        * @param {string} welcome Welcome Guest!
+      
+        * @param {string} nameInsert Insert your name
+      
+     */
+    this.strings = {
+
+      welcome: "Welcome Guest!",
+
+      nameInsert: "Insert your name",
+
+    }
+  }
+
   // ========================================
 
 
@@ -197,34 +217,6 @@ class Winnetou extends WinnetouBase {
 
 
   /**
-   * Span padrão para titulos de sessões
-   * @param {object} elements
-   * @param {any} elements.repetido 
-   * @param {object} [options]
-   * @param {any=} options.identifier
-   */
-  spanTitle2 = (elements, options) => {
-
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'spanTitle2', `spanTitle2-win-${identifier}`, elements);
-
-    return {
-      code: `
-  <span class="spanTitle" id="spanTitle2-win-${identifier}">
-    ${elements.repetido}
-  </span>
-`,
-      ids: {
-        spanTitle2: `spanTitle2-win-${identifier}`,
-      },
-    }
-  } // ========================================
-
-
-
-
-  /**
    * 
    * @param {object} elements
    * @param {any} elements.nome 
@@ -247,6 +239,34 @@ class Winnetou extends WinnetouBase {
 `,
       ids: {
         profile: `profile-win-${identifier}`,
+      },
+    }
+  } // ========================================
+
+
+
+
+  /**
+   * Span padrão para titulos de sessões
+   * @param {object} elements
+   * @param {any} elements.repetido 
+   * @param {object} [options]
+   * @param {any=} options.identifier
+   */
+  spanTitle2 = (elements, options) => {
+
+    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
+
+    elements = this._test(identifier, 'spanTitle2', `spanTitle2-win-${identifier}`, elements);
+
+    return {
+      code: `
+  <span class="spanTitle" id="spanTitle2-win-${identifier}">
+    ${elements.repetido}
+  </span>
+`,
+      ids: {
+        spanTitle2: `spanTitle2-win-${identifier}`,
       },
     }
   } // ========================================
