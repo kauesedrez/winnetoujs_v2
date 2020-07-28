@@ -54,5 +54,12 @@
 </winnetou>
 
 <winnetou>
-  <button id="[[btSimples]]" onclick="{{action}}">{{text}}</button>
+  <button
+    class="btn"
+    id="[[btSimples]]"
+    onclick="{{?action}}"
+    {{?data}}
+  >
+    {{text}}
+  </button>
 </winnetou>

@@ -50,6 +50,9 @@ export default class WinnetouBase {
      */
     this.routesOptions = {};
 
+    /**@private */
+    this.storedEvents = [];
+
     /**
      * POPSTATE NATIVO
      */
@@ -171,6 +174,14 @@ export default class WinnetouBase {
       if (options && options.reverse) item.prependChild(frag);
       else item.appendChild(frag);
     });
+  }
+
+  destroy(component) {
+    try {
+      this.select(component).remove();
+    } catch (e) {
+      // throw winnetou error
+    }
   }
 
   /**
@@ -513,7 +524,6 @@ export default class WinnetouBase {
           }
         }
 
-        console.log(i, filter.length);
         if (correctMatch) {
           this.routes[filter[i].root](...paramStore);
           return;
@@ -532,7 +542,6 @@ export default class WinnetouBase {
       this.routes["/404"]();
     } catch (e) {
       document.write("Not Found");
-      console.log("Not Found");
     }
   }
 
@@ -543,5 +552,68 @@ export default class WinnetouBase {
     } catch (e) {
       history.pushState(url, null);
     }
+  }
+
+  /**
+   * Method for handle events
+   * @param  {string} eventName
+   * @param  {string} elementSelector
+   * @param  {function} handler
+   */
+  on(eventName, elementSelector, handler) {
+    // Todo:
+    // dá para dar um JSON.stringify aqui e guardar a função
+
+    let test = this.storedEvents.filter(
+      data =>
+        data.eventName === eventName &&
+        data.elementSelector === elementSelector &&
+        data.handler === handler.toString()
+    );
+
+    if (test.length > 0) {
+      // console.log(
+      //   `O evento global << ${eventName} >> já foi declarado para o objeto << ${elementSelector} >>, para evitar duplicações use o mesmo bloco de código para implementar novas funções, se for o caso.`,
+      //   "\n\n",
+      //   "Chamada de função:\n" + handler
+      // );
+      return;
+    }
+    this.storedEvents.push({
+      eventName,
+      elementSelector,
+      handler: handler.toString(),
+    });
+
+    function eventHandler(e) {
+      for (
+        var target = e.target;
+        target && target != this;
+        // @ts-ignore
+        target = target.parentNode
+      ) {
+        // @ts-ignore
+        if (target.matches(elementSelector)) {
+          handler(target);
+          break;
+        }
+      }
+    }
+
+    document.addEventListener(eventName, eventHandler);
+  }
+  /**
+   * @param  {string} selector
+   * @param  {function} callback
+   */
+  click(selector, callback) {
+    var clickHandler =
+      "ontouchstart" in document.documentElement
+        ? "touchstart"
+        : "click";
+
+    this.on(clickHandler, selector, el => {
+      callback(el);
+    });
   }
 }

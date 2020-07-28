@@ -72,9 +72,9 @@ class Winnetou {
       window.onpopstate = function (event) {
         if ($debug == "debug") {
           console.warn(
-            `popstate triggered: location: ${document.location}, state: ${JSON.stringify(
-              event.state
-            )}`
+            `popstate triggered: location: ${
+              document.location
+            }, state: ${JSON.stringify(event.state)}`
           );
         }
 
@@ -108,7 +108,9 @@ class Winnetou {
         }
       };
     } else {
-      $debug === "debug" ? console.log("History Api not allowed in this browser.") : null;
+      $debug === "debug"
+        ? console.log("History Api not allowed in this browser.")
+        : null;
     }
 
     // temas
@@ -118,7 +120,8 @@ class Winnetou {
       theme = JSON.parse(theme);
       let root = document.documentElement;
       Object.keys(theme).forEach(function (item) {
-        if ($debug === "debug") console.log(item + " = " + theme[item]);
+        if ($debug === "debug")
+          console.log(item + " = " + theme[item]);
 
         root.style.setProperty(item, theme[item]);
       });
@@ -128,7 +131,17 @@ class Winnetou {
     }
   }
 
-  log(i, a = "", b = "", c = "", d = "", e = "", f = "", g = "", h = "") {
+  log(
+    i,
+    a = "",
+    b = "",
+    c = "",
+    d = "",
+    e = "",
+    f = "",
+    g = "",
+    h = ""
+  ) {
     if (i === 7)
       console.warn(
         "\n\nWINNETOU DEVELOPMENT INTERNAL LOG\n",
@@ -150,8 +163,10 @@ class Winnetou {
    * @returns string value
    */
   getMutable(mutable) {
-    let local_mutable = window.localStorage.getItem(`mutable_${mutable}`) || false;
-    if (!local_mutable) local_mutable = this.mutable[mutable] || false;
+    let local_mutable =
+      window.localStorage.getItem(`mutable_${mutable}`) || false;
+    if (!local_mutable)
+      local_mutable = this.mutable[mutable] || false;
     return local_mutable;
   }
 
@@ -164,7 +179,8 @@ class Winnetou {
     var $log = this.log;
     var $this = this;
 
-    if (localStorage) window.localStorage.setItem(`mutable_${mutable}`, value);
+    if (localStorage)
+      window.localStorage.setItem(`mutable_${mutable}`, value);
     else this.mutable[mutable] = value;
 
     // se estiver usando mutable no localstorage nao atualiza o constructo?
@@ -182,7 +198,12 @@ class Winnetou {
         let new_ = document
           .createRange()
           .createContextualFragment(
-            this.pull(item.constructo, item.elements, item.options, "replacestore")
+            this.pull(
+              item.constructo,
+              item.elements,
+              item.options,
+              "replacestore"
+            )
           );
 
         this.replace(new_, old_);
@@ -234,15 +255,23 @@ class Winnetou {
       let separatedRoutes = url.split("/");
       $this.log(4, "separatedRoutes", separatedRoutes);
       if (separatedRoutes.length > 2) {
-        if (Object.keys($this.paramRoutes).indexOf("/" + separatedRoutes[1]) != -1) {
+        if (
+          Object.keys($this.paramRoutes).indexOf(
+            "/" + separatedRoutes[1]
+          ) != -1
+        ) {
           // existe a ocorrencia
           $this.log(
             4,
             "existe a ocorrencia",
-            `/${separatedRoutes[1]}/:${$this.paramRoutes["/" + separatedRoutes[1]]}`
+            `/${separatedRoutes[1]}/:${
+              $this.paramRoutes["/" + separatedRoutes[1]]
+            }`
           );
           $this.routes[
-            `/${separatedRoutes[1]}/:${$this.paramRoutes["/" + separatedRoutes[1]]}`
+            `/${separatedRoutes[1]}/:${
+              $this.paramRoutes["/" + separatedRoutes[1]]
+            }`
           ](separatedRoutes[2]);
         } else {
           $this.routes[url]();
@@ -264,7 +293,9 @@ class Winnetou {
           console.warn(
             "Winnetou Warning: the /404 route was not defined in the this.routes."
           );
-        document.write("<h1>WinnetouJs</h1><h2>The indie javascript framework</h2>");
+        document.write(
+          "<h1>WinnetouJs</h1><h2>The indie javascript framework</h2>"
+        );
       }
     }
   }
@@ -395,7 +426,9 @@ Output: ${output}
         // preenche o retorno
         var regId = /\[\[\s*?(.*?)\s*?\]\]/g;
         var matchIds = $this.$base[constructo].match(regId);
-        matchIds = matchIds.map(item => item.replace("[[", "").replace("]]", ""));
+        matchIds = matchIds.map(item =>
+          item.replace("[[", "").replace("]]", "")
+        );
         matchIds = matchIds.map(item => item + "-" + identifier);
 
         matchIds.forEach(item => {
@@ -440,7 +473,11 @@ Output: ${output}
 
             $this.usingMutable[elements[item].mutable].push(obj);
 
-            $log(3, "usingMutable dentro do create", $this.usingMutable);
+            $log(
+              3,
+              "usingMutable dentro do create",
+              $this.usingMutable
+            );
 
             //
           } else {
@@ -471,7 +508,9 @@ Output: ${output}
           if ($vdom.substr(0, 3) === "<tr") {
             item.innerHTML = $vdom;
           } else {
-            let frag = document.createRange().createContextualFragment($vdom);
+            let frag = document
+              .createRange()
+              .createContextualFragment($vdom);
             item.appendChild(frag);
           }
         }
@@ -480,7 +519,9 @@ Output: ${output}
           if ($vdom.substr(0, 3) === "<tr") {
             item.innerHTML = $vdom + item.innerHTML;
           } else {
-            let frag = document.createRange().createContextualFragment($vdom);
+            let frag = document
+              .createRange()
+              .createContextualFragment($vdom);
             item.prepend(frag);
           }
         }
@@ -490,7 +531,9 @@ Output: ${output}
           } else {
             $log(6, "dentro appendChild");
 
-            let frag = document.createRange().createContextualFragment($vdom);
+            let frag = document
+              .createRange()
+              .createContextualFragment($vdom);
             item.appendChild(frag);
           }
         }
@@ -655,7 +698,9 @@ Output: ${output}
       render(output) {
         let el = document.querySelectorAll(output);
         el.forEach(item => {
-          let frag = document.createRange().createContextualFragment(result);
+          let frag = document
+            .createRange()
+            .createContextualFragment(result);
           item.appendChild(frag);
         });
       },
@@ -674,7 +719,9 @@ Output: ${output}
       W.select(component).remove();
     } catch (e) {
       if ($this.debug === "debug")
-        console.warn(`Winnetou Warning: The constructo ${component} doesn't exists.`);
+        console.warn(
+          `Winnetou Warning: The constructo ${component} doesn't exists.`
+        );
     }
   }
 
@@ -701,11 +748,15 @@ Output: ${output}
           //
           else if (selector.includes(".")) {
             selector = selector.replace(".", "");
-            return Array.from(document.getElementsByClassName(selector));
+            return Array.from(
+              document.getElementsByClassName(selector)
+            );
           }
           //
           else {
-            return Array.from(document.getElementsByTagName(selector));
+            return Array.from(
+              document.getElementsByTagName(selector)
+            );
           }
         }
       },
@@ -843,7 +894,9 @@ Output: ${output}
    */
   click(selector = "", callback) {
     var clickHandler =
-      "ontouchstart" in document.documentElement ? "touchstart" : "click";
+      "ontouchstart" in document.documentElement
+        ? "touchstart"
+        : "click";
 
     this.on(clickHandler, selector, el => {
       callback(el);
@@ -915,7 +968,11 @@ Output: ${output}
         next();
       }
     };
-    xhttp.open("GET", `/${folderName}/translations/${defaultLang}.xml`, true);
+    xhttp.open(
+      "GET",
+      `/${folderName}/translations/${defaultLang}.xml`,
+      true
+    );
     xhttp.send();
   }
 
@@ -960,7 +1017,8 @@ Output: ${output}
         }
       } catch (e) {
         callback("Winnetou Ajax Cache error: " + e.message, false);
-        if ($debug === "debug") console.error("Winnetou Ajax Cache error: " + e.message);
+        if ($debug === "debug")
+          console.error("Winnetou Ajax Cache error: " + e.message);
       }
     } else if (options.cacheThenServer) {
       //
@@ -979,7 +1037,8 @@ Output: ${output}
         }
       } catch (e) {
         callback("Winnetou Ajax Cache error: " + e.message, false);
-        if ($debug === "debug") console.error("Winnetou Ajax Cache error: " + e.message);
+        if ($debug === "debug")
+          console.error("Winnetou Ajax Cache error: " + e.message);
       }
     } else {
       requestAjax((e, s) => callback(e, s));
@@ -1004,7 +1063,9 @@ Output: ${output}
 
       if (!httpRequest) {
         if ($debug === "debug")
-          console.error("Winnetou Error: Giving up :( Cannot create an XMLHTTP instance");
+          console.error(
+            "Winnetou Error: Giving up :( Cannot create an XMLHTTP instance"
+          );
         callback2("The browser doesn't support ajax", false);
         return false;
       }
@@ -1026,7 +1087,10 @@ Output: ${output}
 
       if (options.json !== false) {
         console.log("JSON ENABLED");
-        httpRequest.setRequestHeader("Content-Type", "application/json");
+        httpRequest.setRequestHeader(
+          "Content-Type",
+          "application/json"
+        );
       }
 
       // httpRequest.setRequestHeader(
@@ -1035,7 +1099,8 @@ Output: ${output}
       // );
 
       //
-      if ($debug === "debug") console.log("Data sent: ", options.data);
+      if ($debug === "debug")
+        console.log("Data sent: ", options.data);
       //
       if (options.method == "GET") {
         httpRequest.send();
@@ -1065,11 +1130,16 @@ Output: ${output}
             if (options.cacheOnly || options.cacheThenServer) {
               if (httpRequest.responseText) {
                 //
-                window.localStorage.setItem(options.url, httpRequest.responseText);
+                window.localStorage.setItem(
+                  options.url,
+                  httpRequest.responseText
+                );
                 //
               } else {
                 if ($debug === "debug") {
-                  console.error("Winnetou Ajax: Caches dont support XML responses.");
+                  console.error(
+                    "Winnetou Ajax: Caches dont support XML responses."
+                  );
                 }
               }
             }
@@ -1078,7 +1148,10 @@ Output: ${output}
             switch (options.responseType) {
               //
               case "json":
-                callback2(false, JSON.parse(httpRequest.responseText));
+                callback2(
+                  false,
+                  JSON.parse(httpRequest.responseText)
+                );
                 break;
               //
               case "text":
@@ -1090,7 +1163,10 @@ Output: ${output}
                 break;
               //
               default:
-                callback2(false, JSON.parse(httpRequest.responseText));
+                callback2(
+                  false,
+                  JSON.parse(httpRequest.responseText)
+                );
                 break;
             }
             //
@@ -1127,5 +1203,8 @@ module.exports = Winnetou;
  * Full Trim Prototype
  */
 String.prototype.fulltrim = function () {
-  return this.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, "").replace(/\s+/g, " ");
+  return this.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, "").replace(
+    /\s+/g,
+    " "
+  );
 };

@@ -37,6 +37,38 @@ export default function render() {
     "#app"
   );
 
+  // -------------------------------------------------------
+  // teste eventhandler
+
+  let btnTeste = W.btSimples({
+    text: "Onclick teste",
+    data: "data-user='user 001'",
+  });
+  W.create(btnTeste.code, "#app");
+
+  W.on("click", ".btn", target => {
+    console.log("fui clicado");
+    // mudar o botão de cor
+    W.select("#" + target.id).css("backgroundColor", "red");
+
+    // pegar um attr do botão
+    console.log(target.getAttribute("data-user"));
+
+    // pegar o id do botão
+    console.log(target.id);
+  });
+
+  W.on("click", ".btn", target => {
+    console.log("sou o segundo bind");
+  });
+
+  W.click(".btn", e => {
+    let c = parseInt(W.getMutable("comentarios") || "0");
+    c++;
+    W.setMutable("comentarios", c.toString());
+  });
+  // ----------------------------------------------------------
+
   //@ts-ignore
   window.comentar = () => {
     let c = parseInt(W.getMutable("comentarios") || "0");

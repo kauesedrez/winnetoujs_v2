@@ -165,7 +165,8 @@ class Winnetou extends WinnetouBase {
   /**
    * 
    * @param {object} elements
-   * @param {any} elements.action 
+   * @param {any=} elements.action 
+   * @param {any=} elements.data 
    * @param {any} elements.text 
    * @param {object} [options]
    * @param {any=} options.identifier
@@ -178,7 +179,13 @@ class Winnetou extends WinnetouBase {
 
     return {
       code: `
-  <button id="btSimples-win-${identifier}" onclick="${elements.action}">${elements.text}</button>
+  <button class="btn"
+    id="btSimples-win-${identifier}"
+    onclick="${elements.action || ""}"
+    ${elements.data || ""}
+  >
+    ${elements.text}
+  </button>
 `,
       ids: {
         btSimples: `btSimples-win-${identifier}`,
