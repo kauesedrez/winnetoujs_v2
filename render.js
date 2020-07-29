@@ -78,6 +78,37 @@ export default function render() {
   );
 
   // ----------------------------------------------------------
+  // temas
+
+  // @ts-ignore
+  window.light = () => {
+    W.newTheme({
+      "--main-bg-color": "#ddd",
+      "--main-fg-color": "#333",
+    });
+  };
+
+  // @ts-ignore
+  window.dark = () => {
+    W.newTheme({
+      "--main-bg-color": "#333",
+      "--main-fg-color": "#ddd",
+    });
+  };
+
+  let themeConstructos =
+    W.btSimples({
+      text: "Light Theme",
+      action: "light()",
+    }).code +
+    W.btSimples({
+      text: "Dark Theme",
+      action: "dark()",
+    }).code;
+
+  W.create(themeConstructos, "#app");
+
+  // ----------------------------------------------------------
 
   //@ts-ignore
   window.comentar = () => {

@@ -99,6 +99,23 @@ export default class WinnetouBase {
       //   ? console.log("History Api not allowed in this browser.")
       //   : null;
     }
+
+    /**
+     * TEMAS
+     */
+
+    let theme = window.localStorage.getItem("theme");
+    if (theme) {
+      theme = JSON.parse(theme);
+      let root = document.documentElement;
+      Object.keys(theme).forEach(function (item) {
+        root.style.setProperty(item, theme[item]);
+      });
+
+      // tema alterado carregado
+    } else {
+      // tema default carregado
+    }
   }
 
   /**
@@ -696,5 +713,18 @@ export default class WinnetouBase {
   changeLang(lang) {
     window.localStorage.setItem("lang", lang);
     location.reload();
+  }
+  /**
+   * Change application css
+   * @param  {object} theme New theme
+   */
+  newTheme(theme) {
+    let root = document.documentElement;
+
+    Object.keys(theme).forEach(function (item) {
+      root.style.setProperty(item, theme[item]);
+    });
+
+    window.localStorage.setItem("theme", JSON.stringify(theme));
   }
 }
