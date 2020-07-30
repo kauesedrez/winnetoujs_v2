@@ -199,7 +199,7 @@ class Winnetou extends WinnetouBase {
 
     return {
       code: `
-  <button class="btn"
+  <button class="button is-success"
     id="btSimples-win-${identifier}"
     onclick="${elements.action || ""}"
     ${elements.data || ""}

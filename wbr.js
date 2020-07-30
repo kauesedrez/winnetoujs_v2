@@ -24,7 +24,6 @@ const sass = require("sass");
 const UglifyCss = require("uglifycss");
 
 var idList = [];
-var codeCss = [];
 
 var Config;
 
