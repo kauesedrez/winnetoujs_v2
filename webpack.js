@@ -5,7 +5,7 @@ console.clear();
 console.log("Bundler Node Webpack\n\n");
 
 const compiler = webpack({
-  entry: "./bundleTeste.js",
+  entry: "./js/main.js",
   output: {
     path: path.resolve(__dirname, "release"),
     filename: "winBundleRelease_3.js",
@@ -19,7 +19,15 @@ const compiler = webpack({
           loader: "babel-loader",
           options: {
             presets: ["@babel/preset-env"],
-            plugins: ["@babel/plugin-proposal-class-properties"],
+            plugins: [
+              "@babel/plugin-proposal-class-properties",
+              [
+                "@babel/plugin-transform-runtime",
+                {
+                  regenerator: true,
+                },
+              ],
+            ],
           },
         },
       },

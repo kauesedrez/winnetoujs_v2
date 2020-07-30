@@ -4,6 +4,8 @@
   "description": "",
   "main": "_generatedConstructos.js",
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.10.5",
+    "@babel/runtime": "^7.10.5",
     "escape-string-regexp": "^4.0.0",
     "esm": "^3.2.25",
     "fs-extra": "^9.0.1",
