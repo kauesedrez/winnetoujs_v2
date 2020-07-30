@@ -2,7 +2,10 @@
  * WinnetouJs Base Class
  */
 
-// const Config = require("./win.config.js");
+// const Config = require("./win.config.json");
+
+import Config from "./win.config.js";
+
 export default class WinnetouBase {
   constructor() {
     // @ts-ignore
@@ -649,9 +652,21 @@ export default class WinnetouBase {
 
     let This = this;
 
-    let Config = await fetch("./win.config.json").then(res =>
-      res.json()
-    );
+    /**
+     * O problema do fetch é que ele precisa saber o caminho relativo para poder obter as informações do config, porém neste ponto ainda não sabemos o caminho relativo, pois também é uma variável do config.
+     * Preciso de uma forma eficiênte de ler a configuração
+     * o WBR, winnetouBase e webpack.js irão ler este arquivo
+     * na verdade o webpack deve ser um comando dentro do wbr
+     * COMO PASSAR PARÂMETROS VIA LINHA DE COMANDO PARA UM SCRIPT NODEJS?
+     * Então vão ser o wbr e o _winnetouBase.js que irão ler as configs.
+     * É muita incongruência entre o node e o browser
+     * isso não era pra acontecer. ¬¬
+     * so se eu tivesse dois arquivos de configuração distintos, muita mão
+     */
+
+    // let Config = await fetch("./js/win.config.json").then(res =>
+    //   res.json()
+    // );
 
     if (!Config?.folderName) {
       console.error(

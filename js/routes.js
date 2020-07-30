@@ -1,4 +1,4 @@
-import { W } from "./winnetou.js";
+import { W } from "../winnetou.js";
 import render from "./render.js";
 import { likes, profile, guestProfile, notFound } from "./profile.js";
 

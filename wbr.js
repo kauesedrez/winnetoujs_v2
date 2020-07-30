@@ -4,10 +4,15 @@
  * Winnetou Bundle Release  =
  * ==========================
  *
+ * Todo:
+ * Precisa ser com Promise.all para executar em paralelo
+ *
  */
 
-const Config = require("./win.config.json");
 const fs = require("fs-extra");
+
+// const { default: Config } = require("./win.config.js");
+
 const path = require("path");
 const recursive = require("recursive-readdir");
 const htmlParser = require("node-html-parser");
@@ -15,11 +20,58 @@ const { default: Matcher } = require("node-html-parser/dist/matcher");
 const beautify = require("js-beautify").js;
 const escapeStringRegexp = require("escape-string-regexp");
 const xml = require("xml-parse");
+const sass = require("sass");
+const UglifyCss = require("uglifycss");
 
 var idList = [];
+var codeCss = [];
+
+var Config;
 
 // Inicia o programa
-createConstructosClass();
+
+function fixedJson(badJSON) {
+  let a = badJSON
+
+    .replace("{", "")
+    .replace("}", "")
+    .replace("export default", "")
+    .replace(";", "")
+
+    .split(",")
+
+    .filter(x => typeof x === "string" && x.trim().length > 0)
+
+    .join(",")
+
+    // Replace ":" with "@colon@" if it's between double-quotes
+    .replace(/:\s*"([^"]*)"/g, function (match, p1) {
+      return ': "' + p1.replace(/:/g, "@colon@") + '"';
+    })
+
+    // Replace ":" with "@colon@" if it's between single-quotes
+    .replace(/:\s*'([^']*)'/g, function (match, p1) {
+      return ': "' + p1.replace(/:/g, "@colon@") + '"';
+    })
+
+    // Add double-quotes around any tokens before the remaining ":"
+    .replace(/(['"])?([a-z0-9A-Z_]+)(['"])?\s*:/g, '"$2": ')
+
+    // Turn "@colon@" back into ":"
+    .replace(/@colon@/g, ":");
+
+  return JSON.parse(`{${a}}`);
+}
+
+fs.readFile("./win.config.js", "utf-8", (err, data) => {
+  Config = fixedJson(data);
+  main();
+
+  // inicia o css
+  if (Config?.css || Config?.sass) {
+    mainCss();
+  }
+});
 
 function l(a, b) {
   return;
@@ -32,7 +84,7 @@ function l(a, b) {
 /**
  * Create Constructos class from source constructos folder.
  */
-async function createConstructosClass() {
+async function main() {
   const constructosPath = Config.constructosPath;
 
   let resultado = "";
@@ -334,5 +386,80 @@ async function transformarConstructo(arquivo) {
     } catch (e) {
       return reject(e.message);
     }
+  });
+}
+
+let promisesCss = [];
+async function mainCss() {
+  if (Config.sass) {
+    recursive(Config.sass, async (err, files) => {
+      files.forEach(file => {
+        promisesCss.push(transpileSass(file));
+      });
+      css();
+    });
+  }
+
+  function css() {
+    if (Config.css) {
+      // vai ler o diretório do css
+      recursive(Config.css, async (err, files) => {
+        files.forEach(file => {
+          promisesCss.push(getData(file));
+        });
+        exec_();
+      });
+    } else {
+      exec_();
+    }
+  }
+}
+
+function exec_() {
+  Promise.all(promisesCss).then(data => {
+    // data contem um array com todo o meu css
+    data.push(`    
+    * {
+    -webkit-overflow-scrolling: touch;
+      }   
+      .winnetou_display_none {
+          display: none !important;
+      }                
+    `);
+
+    let result = UglifyCss.processString(data.join("\n"));
+
+    fs.outputFile(
+      Config.out + "/bundleWinnetouStyles.min.css",
+      result,
+      function (err) {
+        if (err) {
+        }
+        console.log("CSS and SASS ok");
+      }
+    );
+  });
+}
+
+async function transpileSass(file) {
+  return new Promise((resolve, reject) => {
+    sass.render(
+      {
+        file,
+      },
+      function (err, result) {
+        if (err) return reject(err);
+        return resolve(result.css.toString());
+      }
+    );
+  });
+}
+
+async function getData(file) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, function (err, data) {
+      if (err) return reject(err);
+      return resolve(data.toString());
+    });
   });
 }

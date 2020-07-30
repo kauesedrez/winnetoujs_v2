@@ -1,4 +1,4 @@
-import { W } from "./winnetou.js";
+import { W } from "../winnetou.js";
 
 export default function render() {
   let post = W.post({

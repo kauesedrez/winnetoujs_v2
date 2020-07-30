@@ -1,4 +1,4 @@
-import { W } from "./winnetou.js";
+import { W } from "../winnetou.js";
 
 export function likes(user, post, comment, likes) {
   let profile = W.profile({

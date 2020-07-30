@@ -10,6 +10,8 @@
     "js-beautify": "^1.11.0",
     "node-html-parser": "^1.2.20",
     "recursive-readdir": "^2.2.2",
+    "sass": "^1.26.10",
+    "uglifycss": "0.0.29",
     "xml-parse": "^0.4.0"
   },
   "devDependencies": {
