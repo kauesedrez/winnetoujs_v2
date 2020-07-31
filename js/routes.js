@@ -1,11 +1,13 @@
-import { W } from "../winnetou.js";
+import { Winnetou as W, Constructos as C } from "../winnetou.js";
 import render from "./render.js";
+import app from "./app.js";
 import { likes, profile, guestProfile, notFound } from "./profile.js";
 
 export default function routes() {
   W.createRoutes(
     {
-      "/": render,
+      "/": app,
+      "/render": render,
       "/profile/:user/:post/:comment/:likes": (
         user,
         post,

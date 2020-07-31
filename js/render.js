@@ -1,11 +1,15 @@
-import { W } from "../winnetou.js";
+import {
+  Winnetou as W,
+  Constructos as C,
+  Strings,
+} from "../winnetou.js";
 
 export default function render() {
   let post = W.post({
     actionMyProfile: "W.navigate('/profile')",
     actionProfile:
       "W.navigate('/profile/Winnetou/post21/comment100/likes300')",
-    nome: W.strings.welcome,
+    nome: Strings.welcome,
     post: "Entendendo de vez o WinnetouJs",
     comentarios: { mutable: "comentarios" },
     curtidas: { mutable: "curtidas" },

@@ -2,65 +2,53 @@ import WinnetouBase from "./_winnetouBase.js";
 
 /**
  * WinnetouJs Main Class
- * 
+ *
  */
-//@ts-ignore
 class _Winnetou extends WinnetouBase {
   constructor() {
     super();
-
-
-
     /**
-     * Object containing the strings taken from the translation file    
-     * @private       
+     * Object containing the strings taken from the translation file           
+     
+        * @param {string} welcome Welcome Guest!
+      
+        * @param {string} nameInsert Insert your name
+      
      */
     this.strings = {
-      /** @property Welcome Guest! */
       welcome: "Welcome Guest!",
-      /** @property Insert your name */
+
       nameInsert: "Insert your name",
+    };
 
-    }
-
-
-
-    /**
-     * Object containing all available constructos. 
-     * @private */
+    /**@private */
     this.Constructos = {
       simpleDiv: this.simpleDiv,
-      spanTitle: this.spanTitle,
-      post: this.post,
-      notify: this.notify,
-      btSimples: this.btSimples,
-      spanTitle2: this.spanTitle2,
-      profile: this.profile,
-      slideScreen: this.slideScreen,
-      screen: this.screen,
-      testeMutables: this.testeMutables
-    }
+    };
   }
 
   // ========================================
 
-
-
-
   /**
    * Div simples para inserção de texto
+   * @private
    * @param {object} elements
    * @param {any=} elements.titulo Titulo da div
    * @param {any} elements.texto Texto a ser apresentado na simpleDiv
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   simpleDiv = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'simpleDiv', `simpleDiv-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "simpleDiv",
+      `simpleDiv-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -76,27 +64,29 @@ class _Winnetou extends WinnetouBase {
         h1TiTle: `h1TiTle-win-${identifier}`,
         pTexto: `pTexto-win-${identifier}`,
       },
-    }
-  }
+    };
+  };
 
   // ========================================
-
-
-
 
   /**
    * Span padrão para títulos de sessões
    * @param {object} elements
-   * @param {any} elements.texto 
+   * @param {any} elements.texto
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   spanTitle = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'spanTitle', `spanTitle-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "spanTitle",
+      `spanTitle-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -107,33 +97,35 @@ class _Winnetou extends WinnetouBase {
       ids: {
         spanTitle: `spanTitle-win-${identifier}`,
       },
-    }
-  }
+    };
+  };
 
   // ========================================
-
-
-
 
   /**
    * Post
    * @param {object} elements
-   * @param {any} elements.nome 
-   * @param {any} elements.actionProfile 
-   * @param {any} elements.actionMyProfile 
-   * @param {any} elements.post 
-   * @param {any} elements.comentarios 
-   * @param {any} elements.curtidas 
-   * @param {any} elements.Compartilhamentos 
+   * @param {any} elements.nome
+   * @param {any} elements.actionProfile
+   * @param {any} elements.actionMyProfile
+   * @param {any} elements.post
+   * @param {any} elements.comentarios
+   * @param {any} elements.curtidas
+   * @param {any} elements.Compartilhamentos
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   post = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'post', `post-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "post",
+      `post-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -156,29 +148,31 @@ class _Winnetou extends WinnetouBase {
       ids: {
         post: `post-win-${identifier}`,
       },
-    }
-  }
+    };
+  };
 
   // ========================================
-
-
-
 
   /**
    * Post
    * @param {object} elements
-   * @param {any} elements.comentarios 
-   * @param {any} elements.curtidas 
-   * @param {any} elements.Compartilhamentos 
+   * @param {any} elements.comentarios
+   * @param {any} elements.curtidas
+   * @param {any} elements.Compartilhamentos
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   notify = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'notify', `notify-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "notify",
+      `notify-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -195,29 +189,31 @@ class _Winnetou extends WinnetouBase {
       ids: {
         notify: `notify-win-${identifier}`,
       },
-    }
-  }
+    };
+  };
 
   // ========================================
 
-
-
-
   /**
-   * 
+   *
    * @param {object} elements
-   * @param {any=} elements.action 
-   * @param {any=} elements.data 
-   * @param {any} elements.text 
+   * @param {any=} elements.action
+   * @param {any=} elements.data
+   * @param {any} elements.text
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   btSimples = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'btSimples', `btSimples-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "btSimples",
+      `btSimples-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -232,25 +228,27 @@ class _Winnetou extends WinnetouBase {
       ids: {
         btSimples: `btSimples-win-${identifier}`,
       },
-    }
-  } // ========================================
-
-
-
+    };
+  }; // ========================================
 
   /**
    * Span padrão para titulos de sessões
    * @param {object} elements
-   * @param {any} elements.repetido 
+   * @param {any} elements.repetido
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   spanTitle2 = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'spanTitle2', `spanTitle2-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "spanTitle2",
+      `spanTitle2-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -261,26 +259,28 @@ class _Winnetou extends WinnetouBase {
       ids: {
         spanTitle2: `spanTitle2-win-${identifier}`,
       },
-    }
-  } // ========================================
-
-
-
+    };
+  }; // ========================================
 
   /**
-   * 
+   *
    * @param {object} elements
-   * @param {any} elements.nome 
-   * @param {any} elements.descri 
+   * @param {any} elements.nome
+   * @param {any} elements.descri
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   profile = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'profile', `profile-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "profile",
+      `profile-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -292,24 +292,26 @@ class _Winnetou extends WinnetouBase {
       ids: {
         profile: `profile-win-${identifier}`,
       },
-    }
-  } // ========================================
-
-
-
+    };
+  }; // ========================================
 
   /**
-   * 
+   *
    * @param {object} [elements]
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   slideScreen = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'slideScreen', `slideScreen-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "slideScreen",
+      `slideScreen-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -318,26 +320,28 @@ class _Winnetou extends WinnetouBase {
       ids: {
         slideScreen: `slideScreen-win-${identifier}`,
       },
-    }
-  }
+    };
+  };
 
   // ========================================
 
-
-
-
   /**
-   * 
+   *
    * @param {object} [elements]
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   screen = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'screen', `screen-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "screen",
+      `screen-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -346,27 +350,29 @@ class _Winnetou extends WinnetouBase {
       ids: {
         screen: `screen-win-${identifier}`,
       },
-    }
-  } // ========================================
-
-
-
+    };
+  }; // ========================================
 
   /**
    * Mutables button
    * @param {object} elements
-   * @param {any} elements.titulo 
-   * @param {any} elements.texto 
-   * @param {any} elements.action 
+   * @param {any} elements.titulo
+   * @param {any} elements.texto
+   * @param {any} elements.action
    * @param {object} [options]
    * @param {any=} options.identifier
-   * @private
    */
   testeMutables = (elements, options) => {
+    let identifier = this._getIdentifier(
+      options ? options.identifier || "notSet" : "notSet"
+    );
 
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'testeMutables', `testeMutables-win-${identifier}`, elements);
+    elements = this._test(
+      identifier,
+      "testeMutables",
+      `testeMutables-win-${identifier}`,
+      elements
+    );
 
     return {
       code: `
@@ -381,20 +387,10 @@ class _Winnetou extends WinnetouBase {
         testeMutables: `testeMutables-win-${identifier}`,
         text: `text-win-${identifier}`,
       },
-    }
-  }
-
+    };
+  };
 }
 
-// @ts-ignore
 export const Winnetou = new _Winnetou();
 // @ts-ignore
 export const Constructos = Winnetou.Constructos;
-/**
- * Object containing all available constructos. 
-
-  * @param {string} welcome Welcome Guest!
-  * @param {string} nameInsert Insert your name
-*/
-// @ts-ignore
-export const Strings = Winnetou.strings;

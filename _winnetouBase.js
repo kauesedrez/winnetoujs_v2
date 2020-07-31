@@ -126,47 +126,51 @@ export default class WinnetouBase {
    *
    */
   _test(identifier, id, pureId, elements) {
-    let retorno = JSON.parse(JSON.stringify(elements));
-    Object.keys(elements).forEach(item => {
-      if (typeof elements[item] === "object") {
-        // é mutable
-        // precisa registrar este constructo para ser alterado
-        // pelo setMutable
-        // não devo usar variáveis e sim localstorage
-        // sabemos que variáveis não são confiáveis
+    if (elements) {
+      let retorno = JSON.parse(JSON.stringify(elements));
+      Object.keys(elements).forEach(item => {
+        if (typeof elements[item] === "object") {
+          // é mutable
+          // precisa registrar este constructo para ser alterado
+          // pelo setMutable
+          // não devo usar variáveis e sim localstorage
+          // sabemos que variáveis não são confiáveis
 
-        //atualiza o elements para retornar atualizado
-        let mutable = elements[item].mutable;
-        let val = this.getMutable(mutable) || "";
+          //atualiza o elements para retornar atualizado
+          let mutable = elements[item].mutable;
+          let val = this.getMutable(mutable) || "";
 
-        // agora tenho que salvar o constructo
-        if (!this.usingMutable[elements[item].mutable])
-          this.usingMutable[elements[item].mutable] = [];
+          // agora tenho que salvar o constructo
+          if (!this.usingMutable[elements[item].mutable])
+            this.usingMutable[elements[item].mutable] = [];
 
-        let obj = {
-          identifier,
-          id,
-          pureId,
-          elements,
-        };
+          let obj = {
+            identifier,
+            id,
+            pureId,
+            elements,
+          };
 
-        // apenas faz o push caso o pureId ainda não exista
+          // apenas faz o push caso o pureId ainda não exista
 
-        if (
-          this.usingMutable[elements[item].mutable].filter(
-            x => x.pureId == pureId
-          ).length > 0
-        ) {
-          // do nothing
-        } else {
-          this.usingMutable[elements[item].mutable].push(obj);
+          if (
+            this.usingMutable[elements[item].mutable].filter(
+              x => x.pureId == pureId
+            ).length > 0
+          ) {
+            // do nothing
+          } else {
+            this.usingMutable[elements[item].mutable].push(obj);
+          }
+
+          retorno[item] = val;
         }
+      });
 
-        retorno[item] = val;
-      }
-    });
-
-    return retorno;
+      return retorno;
+    } else {
+      return elements;
+    }
   }
 
   /**
@@ -557,6 +561,7 @@ export default class WinnetouBase {
         }
       }
     } catch (e) {
+      console.log(e);
       this.notFound();
     }
   }

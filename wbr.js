@@ -87,6 +87,7 @@ async function main() {
   const constructosPath = Config.constructosPath;
 
   let resultado = "";
+  let constructos = [];
 
   recursive(constructosPath, async (err, files) => {
     for (let file in files) {
@@ -100,7 +101,8 @@ async function main() {
             let constructoMethods = await transformarConstructo(
               arquivo
             );
-            resultado += constructoMethods;
+            resultado += constructoMethods.method;
+            constructos.push(constructoMethods.constructosList);
           }
         }
       } catch (e) {
@@ -109,24 +111,48 @@ async function main() {
     }
 
     // tradução
-    let translate_ = "";
+    let translate_;
     if (Config?.defaultLang) {
       translate_ = await translate();
     }
 
     let resultadoFinal = `
-    import WinnetouBase from "./_winnetouBase.js";
+        import WinnetouBase from "./_winnetouBase.js";
 
-    /**
-     * WinnetouJs Main Class
-     * 
-     */
-    class Winnetou extends WinnetouBase {
-      ${translate_}
-      ${resultado}
-    }
+        /**
+         * WinnetouJs Main Class
+         * 
+         */
+        //@ts-ignore
+        class _Winnetou extends WinnetouBase {
+          constructor(){
+            super();
 
-    export const W = new Winnetou();
+            ${translate_.res}
+
+            /**
+             * Object containing all available constructos. 
+             * @private */
+            this.Constructos = {
+              ${constructos.filter(x => x.length > 0).join(",")}
+            }
+          }
+
+            ${resultado}
+          
+        }
+
+        // @ts-ignore
+        export const Winnetou = new _Winnetou();
+        // @ts-ignore
+        export const Constructos = Winnetou.Constructos;
+        /**
+         * Object containing all available constructos. 
+        ${translate_.jsdoc}
+        */
+        // @ts-ignore
+        export const Strings = Winnetou.strings;
+
     `;
 
     resultadoFinal = beautify(resultadoFinal, {
@@ -150,7 +176,7 @@ async function translate() {
         "WinnetouJs Translation Miss Configuration Error:You have to specify the name of winnetou folder in order to use the translations;"
       );
 
-      return reject("erro");
+      return reject({ err: "erro" });
     }
 
     if (Config.folderName === "/") Config.folderName = "";
@@ -171,31 +197,30 @@ async function translate() {
 
         trad.forEach(item => {
           if (item.tagName && item.childNodes[0]?.text) {
-            strings += `
+            strings += `/** @property ${item.childNodes[0].text.trim()} */           
             ${item.tagName}: "${item.childNodes[0].text.trim()}",
             `;
+
             jsdoc += `
-              * @param {string} ${
-                item.tagName
-              } ${item.childNodes[0].text.trim()}
-            `;
+          * @param {string} ${
+            item.tagName
+          } ${item.childNodes[0].text.trim()}`;
           }
         });
 
         let res = `
-        constructor(){
-          super();
+        
           /**
-           * Object containing the strings taken from the translation file           
-           ${jsdoc}
-           */
+           * Object containing the strings taken from the translation file    
+           * @private       
+          */
           this.strings = {
             ${strings}
           }
-        }
+        
         `;
 
-        return resolve(res);
+        return resolve({ res, jsdoc });
       }
     );
   });
@@ -217,6 +242,7 @@ async function transformarConstructo(arquivo) {
         let dom = htmlParser.parse(data);
         let componentes = dom.querySelectorAll("winnetou");
         let retornoTotal = "";
+        let constructos = [];
 
         Array.from(componentes).forEach(componente => {
           let descri = componente.getAttribute("description");
@@ -294,55 +320,60 @@ async function transformarConstructo(arquivo) {
 
           let matches = constructo.match(regex);
 
-          matches.forEach(match => {
-            //match contem o element puro
-            //match = "{{texto % Texto a ser apresentado na simpleDiv}}"
+          if (matches) {
+            matches.forEach(match => {
+              //match contem o element puro
+              //match = "{{texto % Texto a ser apresentado na simpleDiv}}"
 
-            //obtem o element => el = 'texto % pipipipopopo'
-            let el = match.replace("{{", "");
-            el = el.replace("}}", "");
+              //obtem o element => el = 'texto % pipipipopopo'
+              let el = match.replace("{{", "");
+              el = el.replace("}}", "");
 
-            // verifica se tem comentario o jsdoc
-            let elArr = el.split("%");
+              // verifica se tem comentario o jsdoc
+              let elArr = el.split("%");
 
-            // verifica se o element é obrigatório ou opcional
-            let obrigatorio = false;
-            if (elArr[0].indexOf("?") != -1) {
-              // é opcional
-              // quando tem o ? antes do element
-              // quer dizer que o mesmo é opcional
-              obrigatorio = false;
-            } else {
-              // é obrigatorio
-              obrigatorio = true;
-              elementsObrigatorio = true;
-            }
+              // verifica se o element é obrigatório ou opcional
+              let obrigatorio = false;
+              if (elArr[0].indexOf("?") != -1) {
+                // é opcional
+                // quando tem o ? antes do element
+                // quer dizer que o mesmo é opcional
+                obrigatorio = false;
+              } else {
+                // é obrigatorio
+                obrigatorio = true;
+                elementsObrigatorio = true;
+              }
 
-            //remove o ? do element e aplica o trim
-            // agora temos o element => el = 'texto'
-            // e o comentario jsdoc em comentario
-            el = elArr[0].replace("?", "").trim();
-            let comentario = elArr[1] || "";
+              //remove o ? do element e aplica o trim
+              // agora temos o element => el = 'texto'
+              // e o comentario jsdoc em comentario
+              el = elArr[0].replace("?", "").trim();
+              let comentario = elArr[1] || "";
 
-            // todo:
-            // [ok] Comentário jsdoc
+              // todo:
+              // [ok] Comentário jsdoc
 
-            l(el);
-            l(obrigatorio ? "obrigatorio" : "opcional", comentario);
+              l(el);
+              l(obrigatorio ? "obrigatorio" : "opcional", comentario);
 
-            jsdoc2 += `\t* @param {any${
-              obrigatorio ? "" : "="
-            }} elements.${el} ${comentario.trim()}\n`;
+              jsdoc2 += `\t* @param {any${
+                obrigatorio ? "" : "="
+              }} elements.${el} ${comentario.trim()}\n`;
 
-            // transforma o match em uma regexp aceitável
-            let escapedString = escapeStringRegexp(match);
+              // transforma o match em uma regexp aceitável
+              let escapedString = escapeStringRegexp(match);
 
-            // faz o replace no constructo
-            constructo = constructo.replace(
-              new RegExp(escapedString, "g"),
-              "${elements." + el + (obrigatorio ? "" : ' || ""') + "}"
-            );
-          });
+              // faz o replace no constructo
+              constructo = constructo.replace(
+                new RegExp(escapedString, "g"),
+                "${elements." +
+                  el +
+                  (obrigatorio ? "" : ' || ""') +
+                  "}"
+              );
+            });
+          }
 
           if (elementsObrigatorio)
             jsdoc += "\t* @param {object} elements\n";
@@ -352,9 +383,10 @@ async function transformarConstructo(arquivo) {
 
           jsdoc += "\t* @param {object} [options]\n";
           jsdoc += "\t* @param {any=} options.identifier\n";
+          jsdoc += "\t* @private\n";
           jsdoc += "\t*/\n";
 
-          // agora tenho que transformar o componente em metodo
+          // agora tenho que transformar o componente em método
           let retorno =
             jsdoc +
             id +
@@ -373,14 +405,16 @@ async function transformarConstructo(arquivo) {
             " ";
 
           retornoTotal += retorno;
+          constructos.push(`${id}: this.${id}`);
         });
 
-        return resolve(
-          beautify(retornoTotal, {
+        return resolve({
+          method: beautify(retornoTotal, {
             indent_size: 2,
             space_in_empty_paren: true,
-          })
-        );
+          }),
+          constructosList: constructos,
+        });
       });
     } catch (e) {
       return reject(e.message);

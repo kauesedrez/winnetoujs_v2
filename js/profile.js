@@ -1,4 +1,4 @@
-import { W } from "../winnetou.js";
+import { Winnetou as W, Constructos as C } from "../winnetou.js";
 
 export function likes(user, post, comment, likes) {
   let profile = W.profile({
