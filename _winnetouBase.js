@@ -8,9 +8,6 @@ import Config from "./win.config.js";
 
 export default class WinnetouBase {
   constructor() {
-    // @ts-ignore
-    window.W = this;
-
     /**
      * Incrementally id when no specific identifier is given
      * @protected
@@ -194,7 +191,16 @@ export default class WinnetouBase {
     let frag = document
       .createRange()
       .createContextualFragment(component);
+
     let el = document.querySelectorAll(output);
+
+    /**
+     * Isso para não precisar
+     * usar o # quando se tem o id
+     */
+    if (el.length === 0) {
+      el = document.querySelectorAll("#" + output);
+    }
 
     el.forEach(item => {
       // options
@@ -306,9 +312,15 @@ export default class WinnetouBase {
               return [document.getElementById(selector)];
             }
 
-            return Array.from(
+            let arr = Array.from(
               document.getElementsByTagName(selector)
             );
+
+            if (arr.length === 0) {
+              return [document.getElementById(selector)];
+            } else {
+              return arr;
+            }
           }
         }
       },

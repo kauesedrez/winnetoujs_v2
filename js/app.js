@@ -1,33 +1,80 @@
-import { Winnetou as W, Constructos as C } from "../winnetou.js";
+import { Winnetou, Constructos, Strings } from "../winnetou.js";
 import { screenScroll, slideScreen } from "./slideScreen.js";
 
-export default function app() {
-  // @ts-ignore
-  window.screenScroll = screenScroll;
-  let container = W.slideScreen();
-  W.create(container.code, "#app");
+/**
+ * Registro as classes e os métodos que vou usar via onclick.
+ *
+ * Todo:
+ * Onde está o problema nisso?
+ * Se cada função que eu for chamar via onclick nos constructos
+ * vou ter que declarar global assim na window.
+ * Que mão e que feio. Improdutivo!
+ *
+ * Como resolver? Quais as opções?
+ * Porque eu vou usar muito funções no onclick do constructo,
+ * eu praticamente não vou usar o eventlistener do click
+ * e cada uma dessas funções terá que ser declarada na window.
+ *
+ * Não vejo solução a curto prazo.
+ *
+ */
+//@ts-ignore
+window.Winnetou = Winnetou;
+// @ts-ignore
+window.screenScroll = screenScroll;
 
-  let screen1 = W.screen();
-  W.create(screen1.code, "#" + container.ids.slideScreen);
+/**
+ * Cria o container do slidescreen e
+ * adiciona ao app
+ */
+let ss = Constructos.slideScreen();
+Winnetou.create(ss.code, "#app");
 
-  let screen2 = W.screen();
-  W.create(screen2.code, "#" + container.ids.slideScreen);
+/**
+ * Cria as telas (screens) e adiciona ao container
+ *
+ * Todo:
+ * Esse negócio de ter que colocar o hashtag
+ * antes do id tá muito porco, tenho que pensar em uma solução
+ */
+let tela1 = Constructos.screen();
+let tela2 = Constructos.screen();
+// implementado create sem #
+// testar
+// se funcionar fazer o mesmo no select
+// [ok] funcionou
+Winnetou.create(tela1.code + tela2.code, ss.ids.slideScreen);
 
-  let screen3 = W.screen();
-  W.create(screen3.code, "#" + container.ids.slideScreen);
+/**
+ * Inicializa o slidescreen
+ *
+ * Todo:
+ * Esses nomes 'slideScreen' e 'screenScroll' estão muito
+ * bizarros e complicados, repensar o nome
+ * [ok] estão certíssimos os nomes!
+ */
+slideScreen(ss.ids.slideScreen, "#app");
 
-  slideScreen(container.ids.slideScreen, "#app");
+/**
+ * Adiciona conteúdo às telas
+ */
+let bt = Constructos.btSimples({
+  text: "Sou a tela 1",
+  action: `Winnetou.navigate('/pagina2')`,
+});
+Winnetou.create(bt.code, tela1.ids.screen);
+Winnetou.select(tela1.ids.screen).css("backgroundColor", "red");
+let bt2 = Constructos.btSimples({
+  text: "Sou a tela 2",
+  action: `Winnetou.navigate('/')`,
+});
+Winnetou.create(bt2.code, "#" + tela2.ids.screen);
 
-  pagina1(screen1.ids.screen, screen2.ids.screen);
-  C.simpleDiv({ texto: "eureca!!!" }).code;
-}
-
-function pagina1(out, screen2) {
-  W.create(
-    W.btSimples({
-      text: "Ola slidescreen",
-      action: `screenScroll('${screen2}')`,
-    }).code,
-    "#" + out
-  );
-}
+Winnetou.createRoutes({
+  "/": () => {
+    screenScroll(tela1.ids.screen);
+  },
+  "/pagina2": () => {
+    screenScroll(tela2.ids.screen);
+  },
+});

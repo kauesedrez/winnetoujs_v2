@@ -1,6 +1,6 @@
 export default {
   constructosPath: "./constructos",
-  entry: "./js/main.js",
+  entry: "./js/app.js",
   out: "./release",
   folderName: "/",
   defaultLang: "en-us",
