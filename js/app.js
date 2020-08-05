@@ -1,6 +1,8 @@
 import { Winnetou, Constructos, Strings } from "../winnetou.js";
 import { screenScroll, slideScreen } from "./slideScreen.js";
 
+import { animate } from "./animate.js";
+
 /**
  * Registro as classes e os métodos que vou usar via onclick.
  *
@@ -62,7 +64,14 @@ let bt = Constructos.btSimples({
   text: "Sou a tela 1",
   action: `Winnetou.navigate('/pagina2')`,
 });
-Winnetou.create(bt.code, tela1.ids.screen);
+
+let div = Constructos.simpleDiv({ texto: "Olá mundo" });
+
+Winnetou.create(bt.code + div.code, tela1.ids.screen);
+
+animate(div.ids.simpleDiv, "bounce");
+
+// adiciona à tela 2
 Winnetou.select(tela1.ids.screen).css("backgroundColor", "red");
 let bt2 = Constructos.btSimples({
   text: "Sou a tela 2",

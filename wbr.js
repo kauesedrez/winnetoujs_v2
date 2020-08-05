@@ -426,6 +426,7 @@ let promisesCss = [];
 async function mainCss() {
   if (Config.sass) {
     recursive(Config.sass, async (err, files) => {
+      console.log("files :>> ", files);
       files.forEach(file => {
         promisesCss.push(transpileSass(file));
       });
