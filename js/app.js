@@ -1,7 +1,8 @@
 import { Winnetou, Constructos, Strings } from "../winnetou.js";
 import { screenScroll, slideScreen } from "./slideScreen.js";
 
-import { animate } from "./animate.js";
+import { animate } from "../node_modules/win-animate/src/animate.js";
+// import { animate } from "win-animate";
 
 /**
  * Registro as classes e os métodos que vou usar via onclick.

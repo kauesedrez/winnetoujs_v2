@@ -5,10 +5,10 @@ console.clear();
 console.log("Bundler Node Webpack\n\n");
 
 const compiler = webpack({
-  entry: "./js/main.js",
+  entry: "./js/app.js",
   output: {
     path: path.resolve(__dirname, "release"),
-    filename: "winBundleRelease_3.js",
+    filename: "winBundleRelease_4.js",
   },
   module: {
     rules: [
