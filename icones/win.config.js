@@ -4,5 +4,6 @@ export default {
   out: "./release",
   folderName: "/",
   icons: "./icons",
+  coloredIcons: "./coloredIcons",
   sass: "./sass",
 };

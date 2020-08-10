@@ -1,8 +1,36 @@
-svg {
-  width: 15px;
-  height: 15px;
+// base Winnetou Icons Style
+.winIcons {
+  width: 55px;
+  height: 55px;
+  &:hover {
+    fill: blue;
+    cursor: pointer;
+  }
 }
 
-.redIcon {
-  fill: red;
+// base Winnetou Colored Icons Style
+.winColoredIcons {
+  width: 55px;
+  height: 55px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+// dual tone icons
+.dualTone {
+  .fa-primary {
+    fill: green;
+  }
+  .fa-secondary {
+    fill: #72c308;
+  }
+  &:hover {
+    .fa-primary {
+      fill: rgb(18, 52, 102);
+    }
+    .fa-secondary {
+      fill: #c308aa;
+    }
+  }
 }

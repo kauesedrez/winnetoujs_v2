@@ -196,21 +196,38 @@ async function icons() {
      * Todo:
      * coloredIcons
      */
-    const iconsPath = Config.icons;
-    if (!iconsPath) return reject();
+
     let constructoIcons = "";
-    recursive(iconsPath, async (err, files) => {
+
+    const iconsPath = Config.icons;
+
+    if (iconsPath) {
+      let files = await recursive(iconsPath);
       for (let c = 0; c < files.length; c++) {
         let transpiledIcon = await transpileIcon(files[c]);
         constructoIcons += transpiledIcon;
       }
+    }
 
+    const coloredIconsPath = Config.coloredIcons;
+
+    if (coloredIconsPath) {
+      let files = await recursive(coloredIconsPath);
+      for (let c = 0; c < files.length; c++) {
+        let transpiledIcon = await transpileColoredIcon(files[c]);
+        constructoIcons += transpiledIcon;
+      }
+    }
+
+    if (constructoIcons !== "") {
       await fs.outputFile(
         path.join(Config.constructosPath, "icons.html"),
         prettify(constructoIcons)
       );
       return resolve();
-    });
+    } else {
+      return reject();
+    }
   });
 }
 
@@ -239,13 +256,63 @@ async function transpileIcon(iconPath) {
 
       let symbol = `
       <winnetou description="Create an icon **${id}**">
-      <svg ${viewBox} id="[[${id}]]" class="{{?class%Class for the icon}}">`;
+      <svg ${viewBox} id="[[${id}]]" class="winIcons {{?class%Class for the icon}}">`;
 
       // limpa o fill para poder se trocar o fill
       // via css
       let cleanFill = arr[2].replace("fill", "data-fill");
 
       symbol += cleanFill;
+
+      symbol += `</svg></winnetou>`;
+
+      // agora tenho um array de paths
+      // tenho que colocar dentro do symbol
+
+      return resolve(symbol);
+    } else {
+      return reject();
+    }
+  });
+}
+
+async function transpileColoredIcon(iconsPath) {
+  console.log("dentro do transpile", iconsPath);
+  return new Promise((resolve, reject) => {
+    let xmlString = fs.readFileSync(iconsPath, "utf8");
+
+    let regPath = /[a-zA-Z]+/g;
+
+    let id = iconsPath.match(regPath);
+
+    id = id.filter(x => x != "svg");
+
+    id = id.join("_");
+
+    let regVb = new RegExp('viewBox="(.*?)"', "gis");
+
+    let reg = new RegExp("<svg(.*?)>(.*?)</svg>", "is");
+
+    if (xmlString) {
+      // trata o svg
+
+      let viewBox = xmlString.match(regVb);
+
+      let arr = xmlString.match(reg);
+
+      // let symbol = `<symbol ${viewBox} id="${id}">`;
+
+      let symbol = `
+      <winnetou description="Create an colored icon **${id}**">
+      <svg ${viewBox} id="[[${id}]]" class="winColoredIcons {{?class%Class for the colored icon}}">`;
+
+      // let cleanFill = arr[2].replace("fill", "data-fill");
+
+      let cleanFill = arr[2];
+
+      symbol += cleanFill;
+
+      // symbol += `</symbol>`;
 
       symbol += `</svg></winnetou>`;
 
