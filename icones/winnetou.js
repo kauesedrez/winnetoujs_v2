@@ -42,21 +42,38 @@ class _Winnetou extends WinnetouBase {
    * @private
    */
   divSimples = (elements, options) => {
+    
 
     let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
 
     elements = this._test(identifier, 'divSimples', `divSimples-win-${identifier}`, elements);
 
-    return {
-      code: `
-  <div id="divSimples-win-${identifier}">
-    ${elements?.texto}
-  </div>
-`,
-      ids: {
-        divSimples: `divSimples-win-${identifier}`,
+    let component;
+
+    let obj = {
+      code(elements){
+
+        return `
+        <div id="divSimples-win-${identifier}">
+          ${elements?.texto}
+        </div>
+        `
       },
-    }
+      "create": (output,options) => {
+        this.create(component,output,options);
+        return { 
+          ids: {
+            divSimples: `divSimples-win-${identifier}`,
+          }
+        }
+      }
+    };
+
+    component = obj.code(elements);
+
+    return obj;
+
+
   } // ========================================
 
 

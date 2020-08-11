@@ -1,5 +1,10 @@
 import { Constructos, Winnetou } from "../winnetou.js";
 
-let div1 = Constructos.divSimples({ texto: "Olá Ícones" });
+let div = Constructos.divSimples({ texto: "Olá Ícones" }).create(
+  "#app",
+  {
+    clear: true,
+  }
+);
 
-Winnetou.create(div1.code, "#app");
+console.log(div.ids.divSimples);
