@@ -4,31 +4,239 @@
  * Winnetou Bundle Release  =
  * ==========================
  *
- * Todo:
- * Precisa ser com Promise.all para executar em paralelo
+ * MIT License
+ *
+ * Copyright 2020 Winnetou Kaue Sedrez Bilhalva https://github.com/kauesedrez
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
 
+// REQUIRES ====================================================
+
 const fs = require("fs-extra");
-
-// const { default: Config } = require("./win.config.js");
-
 const path = require("path");
 const recursive = require("recursive-readdir");
 const htmlParser = require("node-html-parser");
-const { default: Matcher } = require("node-html-parser/dist/matcher");
 const beautify = require("js-beautify").js;
 const prettify = require("html-prettify");
 const escapeStringRegexp = require("escape-string-regexp");
 const xml = require("xml-parse");
 const sass = require("sass");
 const UglifyCss = require("uglifycss");
+const figlet = require("figlet");
+const chalk = require("chalk");
 
-var idList = [];
+// GLOBAL VARIABLES =============================================
 
-var Config;
+let idList = [],
+  Config,
+  promisesCss = [];
 
-// Inicia o programa
+// INITIALIZER =================================================
+
+main();
+
+// DRAW METHODS ===============================================
+
+// #region
+
+var contadorDeErros = 0;
+var contadorDeWarnings = 0;
+
+const drawLine = (size = 80) => {
+  let line = "";
+  for (let i = 0; i < size; i++) {
+    if (i == 1) line += " ";
+    else if (i == size - 2) line += " ";
+    else line += "=";
+  }
+  console.log(line);
+};
+
+const drawText = (text = "", params) => {
+  let color = "";
+
+  if (params?.color) {
+    switch (params.color) {
+      case "cyan":
+        color = "\x1b[36m";
+        break;
+
+      case "yellow":
+        color = "\x1b[33m";
+        break;
+
+      case "green":
+        color = "\x1b[32m";
+        break;
+
+      case "red":
+        color = "\x1b[31m";
+        break;
+
+      case "error":
+        color = "\x1b[41m\x1b[37m";
+        break;
+
+      case "bright":
+        color = "\x1b[1m";
+        break;
+
+      case "dim":
+        color = "\x1b[2m";
+        break;
+    }
+  }
+
+  let line = "= " + color + text + "\x1b[0m";
+
+  let tamanho = text.length + 2;
+
+  let size = params?.size || 80;
+
+  for (let i = 0; i < size - tamanho; i++) {
+    if (i == size - tamanho - 1) line += "=";
+    else line += " ";
+  }
+
+  console.log(line);
+};
+
+const drawTextBlock = text => {
+  let arr = text.match(/.{1,74}/g);
+
+  arr.forEach(item => {
+    drawText(item);
+  });
+};
+
+const drawBlankLine = () => {
+  drawText();
+};
+
+const drawSpace = () => {
+  console.log("\n");
+};
+
+const drawError = text => {
+  contadorDeErros++;
+  drawLine();
+  drawBlankLine();
+  console.log("\x1b[1;37;41m");
+  drawText("[ X ] Error");
+  console.log("\x1b[0m");
+  drawBlankLine();
+  drawTextBlock(text);
+  drawBlankLine();
+  drawText("Find online help in");
+  drawText("www.cedrosdev.com.br/winnetoujs");
+  drawBlankLine();
+  drawLine();
+  drawSpace();
+};
+
+const drawWarning = text => {
+  contadorDeWarnings++;
+  drawLine();
+  drawBlankLine();
+  drawText("[ ! ] Warning");
+  drawBlankLine();
+  drawLine();
+  drawBlankLine();
+  drawTextBlock(text);
+  drawBlankLine();
+  drawText("Find online help in");
+  drawText("www.cedrosdev.com.br/winnetoujs");
+  drawBlankLine();
+  drawLine();
+  drawSpace();
+};
+
+const drawWelcome = () => {
+  console.clear();
+  drawLine();
+  drawBlankLine();
+  drawBlankLine();
+  drawText("W I N N E T O U J S ", { color: "bright" });
+  drawBlankLine();
+  drawText(
+    "T h e  i n d i e  j a v a s c r i p t  c o n s t r u c t o r",
+    { color: "dim" }
+  );
+  drawBlankLine();
+  drawText("WinnetouJs.org", { color: "yellow" });
+
+  drawBlankLine();
+  drawBlankLine();
+  drawLine();
+  drawBlankLine();
+  drawText("Find online help and docs", { color: "dim" });
+  drawText("https://winnetoujs.org/docs");
+  drawBlankLine();
+  drawText("Fork on GitHub", { color: "dim" });
+  drawText("https://github.com/cedrosdev/WinnetouJs.git");
+  drawBlankLine();
+  drawText("(c) 2020 Cedros Development (https://cedrosdev.com)", {
+    color: "dim",
+  });
+  drawBlankLine();
+  drawLine();
+  drawBlankLine();
+  drawBlankLine();
+  drawLine();
+  drawSpace();
+};
+
+const drawAdd = text => {
+  console.log("> [added] " + text);
+};
+
+const drawAddError = text => {
+  contadorDeErros++;
+
+  console.log("\n> [error on add (skip)] " + text + "\n");
+};
+
+const drawHtmlMin = text => {
+  console.log("> [html minifield] " + text);
+};
+
+const drawEnd = text => {
+  console.log("> [Bundle Release Finished] " + text);
+};
+
+const drawChange = text => {
+  console.log("> [Modified file] " + text);
+};
+
+const drawFinal = () => {
+  drawLine();
+  drawBlankLine();
+  drawText("All tasks completed");
+  drawBlankLine();
+  if (contadorDeErros > 0) {
+    drawText("... with " + contadorDeErros + " errors");
+    drawBlankLine();
+  }
+  if (contadorDeWarnings > 0) {
+    drawText("... with " + contadorDeWarnings + " warnings");
+    drawBlankLine();
+  }
+
+  drawLine();
+  drawSpace();
+};
+
+drawWelcome();
+
+// #endregion
+
+// MAIN METHODS ================================================
 
 function fixedJson(badJSON) {
   let a = badJSON
@@ -63,16 +271,6 @@ function fixedJson(badJSON) {
   return JSON.parse(`{${a}}`);
 }
 
-fs.readFile("./win.config.js", "utf-8", (err, data) => {
-  Config = fixedJson(data);
-  main();
-
-  // inicia o css
-  if (Config?.css || Config?.sass) {
-    mainCss();
-  }
-});
-
 function l(a, b) {
   return;
   a || b ? console.log("\n============") : null;
@@ -81,14 +279,14 @@ function l(a, b) {
   a || b ? console.log("============") : null;
 }
 
-/**
- * Create Constructos class from source constructos folder.
- */
 async function main() {
-  // antes de entrar nos constructos verifica os ícones
-  // pois tem que gerar o arquivo de constructo do ícones
-  // caso esteja setado no config
+  let data = await fs.readFile("./win.config.js", "utf-8");
 
+  Config = fixedJson(data);
+
+  if (Config?.css || Config?.sass) {
+    mainCss();
+  }
   await icons();
 
   const constructosPath = Config.constructosPath;
@@ -383,12 +581,6 @@ async function translate() {
   });
 }
 
-/**
- * Vai ler o arquivo html e transformar em um método js
- * que será colocado dentro da classe Constructos
- * @param  {string} arquivo caminho do arquivo
- * @returns **Promise** código js do método
- */
 async function transformarConstructo(arquivo) {
   return new Promise((resolve, reject) => {
     try {
@@ -610,7 +802,6 @@ async function transformarConstructo(arquivo) {
   });
 }
 
-let promisesCss = [];
 async function mainCss() {
   if (Config.sass) {
     recursive(Config.sass, async (err, files) => {
