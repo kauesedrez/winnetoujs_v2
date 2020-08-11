@@ -8,9 +8,18 @@ let div = Constructos.divSimples({ texto: "Olá Ícones" }).create(
 );
 
 /**
- * Todo:
- * options tem que ser opcional
+ * todo:
+ * [ok] options tem que ser opcional
  */
-Constructos.coloredIcons_tropical().create("#app");
+let icon = Constructos.coloredIcons_tropical(
+  { class: "redIcon" },
+  { identifier: "meuIcon" }
+).create("#app", { reverse: true });
 
-console.log(div.ids.divSimples);
+/**
+ * todo:
+ * [ok] Reverse não está funcionando
+ * eu tenho certeza que o prependChild funcionava
+ */
+
+console.log(div.ids.divSimples, icon.ids.coloredIcons_tropical);
