@@ -28,8 +28,36 @@ const escapeStringRegexp = require("escape-string-regexp");
 const xml = require("xml-parse");
 const sass = require("sass");
 const UglifyCss = require("uglifycss");
-const figlet = require("figlet");
-const chalk = require("chalk");
+const { exit } = require("process");
+const package = require("./node_modules/winnetoujs/package.json");
+
+// ARGUMENTS ===================================================
+
+process.argv.forEach(function (val, index, array) {
+  if (index === 2) {
+    switch (val) {
+      case "--version":
+        console.log(package.version);
+        exit();
+        break;
+
+      case "--v":
+        console.log(package.version);
+        exit();
+        break;
+
+      case "-version":
+        console.log(package.version);
+        exit();
+        break;
+
+      case "-v":
+        console.log(package.version);
+        exit();
+        break;
+    }
+  }
+});
 
 // GLOBAL VARIABLES =============================================
 
@@ -158,7 +186,7 @@ const drawWarning = text => {
 };
 
 const drawWelcome = () => {
-  console.clear();
+  // console.clear();
   drawLine();
   drawBlankLine();
   drawBlankLine();
