@@ -7,4 +7,10 @@ let div = Constructos.divSimples({ texto: "Olá Ícones" }).create(
   }
 );
 
+/**
+ * Todo:
+ * options tem que ser opcional
+ */
+Constructos.coloredIcons_tropical().create("#app");
+
 console.log(div.ids.divSimples);

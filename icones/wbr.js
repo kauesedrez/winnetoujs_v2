@@ -524,10 +524,10 @@ async function transformarConstructo(arquivo) {
               // faz o replace no constructo
               constructo = constructo.replace(
                 new RegExp(escapedString, "g"),
-                "${elements?." +
+                "${(elements?." +
                   el +
                   (obrigatorio ? "" : ' || ""') +
-                  "}"
+                  ")}"
               );
             });
           }
@@ -554,12 +554,32 @@ async function transformarConstructo(arquivo) {
             "',`" +
             pureId +
             "`,elements);" +
-            "\n\nreturn {code:`" +
+            "let component;" +
+            "let obj = {" +
+            "code(elements) {" +
+            "return `" +
             constructo +
-            "`," +
+            "`" +
+            "}," +
+            '"create":(output,options) => {' +
+            "this.create(component,output, options);" +
+            "return {" +
             ids +
-            "}}" +
-            " ";
+            "}" +
+            "}" + // fechamento create
+            "}" + // fechamento let obj
+            "component = obj.code(elements);" +
+            "return obj;" +
+            // -------------------------
+            "}"; // fechamento do método
+          // ---------------------------
+
+          // "\n\nreturn {code:`" +
+          // constructo +
+          // "`," +
+          // ids +
+          // "}}" +
+          // " ";
 
           retornoTotal += retorno;
           constructos.push(`${id}: this.${id}`);
