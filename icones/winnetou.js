@@ -17,113 +17,14 @@ class _Winnetou extends WinnetouBase {
      * Object containing all available constructos. 
      * @private */
     this.Constructos = {
-      divSimples: this.divSimples,
-      icons_compass: this.icons_compass,
       icons_delete: this.icons_delete,
       icons_tropical: this.icons_tropical,
-      coloredIcons_camera: this.coloredIcons_camera,
       coloredIcons_tropical: this.coloredIcons_tropical,
+      divSimples: this.divSimples,
+      divSimples2: this.divSimples2,
       slideScreen: this.slideScreen,
       screen: this.screen
     }
-  }
-
-  // ========================================
-
-
-
-
-  /**
-   * 
-   * @param {object} elements
-   * @param {any} elements.texto 
-   * @param {object} [options]
-   * @param {any=} options.identifier
-   * @private
-   */
-  divSimples = (elements, options) => {
-
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'divSimples', `divSimples-win-${identifier}`, elements);
-    let component;
-    let obj = {
-      code(elements) {
-        return `
-  <div id="divSimples-win-${identifier}">
-    ${(elements?.texto)}
-  </div>
-`
-      },
-
-      /**
-       * Create Winnetou Constructo        
-       * @param  {string} output The node or list of nodes where the component will be created
-       * @param  {object} [options] Options to control how the construct is inserted. Optional.
-       * @param  {boolean} [options.clear] Clean the node before inserting the construct
-       * @param  {boolean} [options.reverse] Place the construct in front of other constructs
-       */
-
-      "create": (output, options) => {
-        this.create(component, output, options);
-        return {
-          ids: {
-            divSimples: `divSimples-win-${identifier}`,
-          },
-        }
-      }
-    }
-    component = obj.code(elements);
-    return obj;
-  } // ========================================
-
-
-
-
-  /**
-   * Create an icon **icons_compass**
-   * @param {object} [elements]
-   * @param {any=} elements.class Class for the icon
-   * @param {object} [options]
-   * @param {any=} options.identifier
-   * @private
-   */
-  icons_compass = (elements, options) => {
-
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'icons_compass', `icons_compass-win-${identifier}`, elements);
-    let component;
-    let obj = {
-      code(elements) {
-        return `
-    <svg viewBox="0 0 496 512" id="icons_compass-win-${identifier}" class="winIcons ${(elements?.class || "")}">
-    <g class="fa-group">
-      <path data-fill="currentColor" d="M248,8C111,8,0,119,0,256S111,504,248,504,496,393,496,256,385,8,248,8ZM374.14,156.05l-66,144.35a31.94,31.94,0,0,1-15.77,15.77L148,382.17c-16.65,7.61-33.81-9.55-26.2-26.2l66-144.35a31.94,31.94,0,0,1,15.77-15.77l144.34-66c16.66-7.6,33.81,9.55,26.2,26.2Z" class="fa-secondary"></path>
-      <path fill="currentColor" d="M348,129.85l-144.34,66a31.94,31.94,0,0,0-15.77,15.77L121.89,356c-7.61,16.65,9.55,33.81,26.2,26.2l144.34-66a32,32,0,0,0,15.77-15.8l66-144.35c7.55-16.65-9.6-33.8-26.2-26.2ZM270.63,278.62a32,32,0,1,1,0-45.25h0A32,32,0,0,1,270.63,278.62Z" class="fa-primary"></path>
-    </g>
-  </svg>`
-      },
-
-      /**
-       * Create Winnetou Constructo        
-       * @param  {string} output The node or list of nodes where the component will be created
-       * @param  {object} [options] Options to control how the construct is inserted. Optional.
-       * @param  {boolean} [options.clear] Clean the node before inserting the construct
-       * @param  {boolean} [options.reverse] Place the construct in front of other constructs
-       */
-
-      "create": (output, options) => {
-        this.create(component, output, options);
-        return {
-          ids: {
-            icons_compass: `icons_compass-win-${identifier}`,
-          },
-        }
-      }
-    }
-    component = obj.code(elements);
-    return obj;
   }
 
   // ========================================
@@ -226,52 +127,6 @@ class _Winnetou extends WinnetouBase {
 
 
   /**
-   * Create an colored icon **coloredIcons_camera**
-   * @param {object} [elements]
-   * @param {any=} elements.class Class for the colored icon
-   * @param {object} [options]
-   * @param {any=} options.identifier
-   * @private
-   */
-  coloredIcons_camera = (elements, options) => {
-
-    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
-
-    elements = this._test(identifier, 'coloredIcons_camera', `coloredIcons_camera-win-${identifier}`, elements);
-    let component;
-    let obj = {
-      code(elements) {
-        return `
-<svg viewBox="0 0 512 512" id="coloredIcons_camera-win-${identifier}" class="winColoredIcons ${(elements?.class || "")}"><g><path d="m512 125.602h-229.444l-20 160.398 20 160.398h229.444z" fill="#0a1f33"></path><path d="m282.556 125.602h-186.954l-51.868 73.734 20 247.062h218.822z" fill="#17324d"></path><path d="m364.576 125.602-16.077-60h-65.943l-20 80z" fill="#17324d"></path><path d="m282.556 65.602h-65.943l-16.077 60 82.02 20z" fill="#284866"></path><path d="m282.556 95.602h30v30l-50 20z" fill="#cfdfe6"></path><path d="m252.556 95.602h30v50l-30-20z" fill="#fff5f5"></path><path d="m282.556 125.602-20 126.648h135.955l-33.935-126.648z" fill="#284866"></path><path d="m200.536 125.602-33.935 126.648h115.955v-126.648z" fill="#406080"></path><path d="m442.954 271h-30.868c-7.463-64.862-62.701-115.398-129.53-115.398l-20 130.398 20 130.398c66.829 0 122.067-50.536 129.53-115.398h30.868z" fill="#17324d"></path><path d="m282.556 155.602c-71.902 0-130.398 58.496-130.398 130.398s58.496 130.398 130.398 130.398z" fill="#284866"></path><path d="m282.556 185.602-20 100.398 20 100.398c55.36 0 100.398-45.039 100.398-100.398s-45.038-100.398-100.398-100.398z" fill="#284866"></path><path d="m182.158 286c0 55.36 45.039 100.398 100.398 100.398v-200.796c-55.36 0-100.398 45.038-100.398 100.398z" fill="#406080"></path><path d="m282.556 215.602-20 70.398 20 70.398c38.818 0 70.398-31.581 70.398-70.398s-31.58-70.398-70.398-70.398z" fill="#0a1f33"></path><path d="m212.158 286c0 38.818 31.581 70.398 70.398 70.398v-140.796c-38.818 0-70.398 31.58-70.398 70.398z" fill="#17324d"></path><path d="m282.556 256-20 30 20 30c16.569 0 30-13.431 30-30s-13.431-30-30-30z" fill="#cfdfe6"></path><path d="m0 199.336v247.062h63.734v-267.062z" fill="#284866"></path><path d="m0 199.336h95.602v-30l-47.801-20-47.801 20z" fill="#f66"></path><path d="m0 125.602h95.602v43.734h-95.602z" fill="#284866"></path><path d="m252.556 286c0 16.569 13.431 30 30 30v-60c-16.568 0-30 13.431-30 30z" fill="#fff5f5"></path></g></svg>`
-      },
-
-      /**
-       * Create Winnetou Constructo        
-       * @param  {string} output The node or list of nodes where the component will be created
-       * @param  {object} [options] Options to control how the construct is inserted. Optional.
-       * @param  {boolean} [options.clear] Clean the node before inserting the construct
-       * @param  {boolean} [options.reverse] Place the construct in front of other constructs
-       */
-
-      "create": (output, options) => {
-        this.create(component, output, options);
-        return {
-          ids: {
-            coloredIcons_camera: `coloredIcons_camera-win-${identifier}`,
-          },
-        }
-      }
-    }
-    component = obj.code(elements);
-    return obj;
-  }
-
-  // ========================================
-
-
-
-
-  /**
    * Create an colored icon **coloredIcons_tropical**
    * @param {object} [elements]
    * @param {any=} elements.class Class for the colored icon
@@ -304,6 +159,100 @@ class _Winnetou extends WinnetouBase {
         return {
           ids: {
             coloredIcons_tropical: `coloredIcons_tropical-win-${identifier}`,
+          },
+        }
+      }
+    }
+    component = obj.code(elements);
+    return obj;
+  } // ========================================
+
+
+
+
+  /**
+   * 
+   * @param {object} elements
+   * @param {any} elements.texto 
+   * @param {object} [options]
+   * @param {any=} options.identifier
+   * @private
+   */
+  divSimples = (elements, options) => {
+
+    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
+
+    elements = this._test(identifier, 'divSimples', `divSimples-win-${identifier}`, elements);
+    let component;
+    let obj = {
+      code(elements) {
+        return `
+  <div id="divSimples-win-${identifier}">
+    ${(elements?.texto)}
+  </div>
+`
+      },
+
+      /**
+       * Create Winnetou Constructo        
+       * @param  {string} output The node or list of nodes where the component will be created
+       * @param  {object} [options] Options to control how the construct is inserted. Optional.
+       * @param  {boolean} [options.clear] Clean the node before inserting the construct
+       * @param  {boolean} [options.reverse] Place the construct in front of other constructs
+       */
+
+      "create": (output, options) => {
+        this.create(component, output, options);
+        return {
+          ids: {
+            divSimples: `divSimples-win-${identifier}`,
+          },
+        }
+      }
+    }
+    component = obj.code(elements);
+    return obj;
+  } // ========================================
+
+
+
+
+  /**
+   * 
+   * @param {object} elements
+   * @param {any} elements.texto 
+   * @param {object} [options]
+   * @param {any=} options.identifier
+   * @private
+   */
+  divSimples2 = (elements, options) => {
+
+    let identifier = this._getIdentifier(options ? options.identifier || 'notSet' : 'notSet');
+
+    elements = this._test(identifier, 'divSimples2', `divSimples2-win-${identifier}`, elements);
+    let component;
+    let obj = {
+      code(elements) {
+        return `
+  <div id="divSimples2-win-${identifier}">
+    ${(elements?.texto)}
+  </div>
+`
+      },
+
+      /**
+       * Create Winnetou Constructo        
+       * @param  {string} output The node or list of nodes where the component will be created
+       * @param  {object} [options] Options to control how the construct is inserted. Optional.
+       * @param  {boolean} [options.clear] Clean the node before inserting the construct
+       * @param  {boolean} [options.reverse] Place the construct in front of other constructs
+       */
+
+      "create": (output, options) => {
+        this.create(component, output, options);
+        return {
+          ids: {
+            divSimples2: `divSimples2-win-${identifier}`,
           },
         }
       }

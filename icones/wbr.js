@@ -63,7 +63,9 @@ process.argv.forEach(function (val, index, array) {
 
 let idList = [],
   Config,
-  promisesCss = [];
+  promisesCss = [],
+  errorsCount = 0,
+  warningCount = 0;
 
 // INITIALIZER =================================================
 
@@ -72,9 +74,6 @@ main();
 // DRAW METHODS ===============================================
 
 // #region
-
-var contadorDeErros = 0;
-var contadorDeWarnings = 0;
 
 const drawLine = (size = 80) => {
   let line = "";
@@ -85,7 +84,14 @@ const drawLine = (size = 80) => {
   }
   console.log(line);
 };
-
+/**
+ * Draw string line
+ * @param  {string} [text] string to be printed
+ * @param  {object} [params]
+ * @param {('cyan'|'yellow'|'green'|'red'|'error'|'bright'|'dim'|'warning')} [params.color] string color
+ * @param {number} [params.size] line size, default 80
+ * @param {('add'|'addError')} [params.type] string style type
+ */
 const drawText = (text = "", params) => {
   let color = "";
 
@@ -108,7 +114,11 @@ const drawText = (text = "", params) => {
         break;
 
       case "error":
-        color = "\x1b[41m\x1b[37m";
+        color = "\x1b[1m\x1b[5m\x1b[41m\x1b[37m";
+        break;
+
+      case "warning":
+        color = "\x1b[1m\x1b[33m";
         break;
 
       case "bright":
@@ -123,6 +133,24 @@ const drawText = (text = "", params) => {
 
   let line = "= " + color + text + "\x1b[0m";
 
+  if (params?.type === "add") {
+    line =
+      "= \x1b[42m\x1b[37m success \x1b[0m " +
+      color +
+      text +
+      "\x1b[0m";
+    text = " success  " + text;
+  }
+
+  if (params?.type === "addError") {
+    line =
+      "= \x1b[5m\x1b[43m\x1b[37m fail \x1b[0m " +
+      color +
+      text +
+      "\x1b[0m";
+    text = " fail  " + text;
+  }
+
   let tamanho = text.length + 2;
 
   let size = params?.size || 80;
@@ -135,11 +163,10 @@ const drawText = (text = "", params) => {
   console.log(line);
 };
 
-const drawTextBlock = text => {
+const drawTextBlock = (text, params) => {
   let arr = text.match(/.{1,74}/g);
-
   arr.forEach(item => {
-    drawText(item);
+    drawText(item, params);
   });
 };
 
@@ -151,38 +178,31 @@ const drawSpace = () => {
   console.log("\n");
 };
 
+/**
+ * Draw error
+ * @param {string} text error string
+ */
 const drawError = text => {
-  contadorDeErros++;
+  errorsCount++;
   drawLine();
   drawBlankLine();
-  console.log("\x1b[1;37;41m");
-  drawText("[ X ] Error");
-  console.log("\x1b[0m");
+  drawText(" Bundle Error ", { color: "error" });
   drawBlankLine();
   drawTextBlock(text);
   drawBlankLine();
-  drawText("Find online help in");
-  drawText("www.cedrosdev.com.br/winnetoujs");
-  drawBlankLine();
   drawLine();
-  drawSpace();
+  drawBlankLine();
 };
 
 const drawWarning = text => {
-  contadorDeWarnings++;
+  warningCount++;
   drawLine();
   drawBlankLine();
-  drawText("[ ! ] Warning");
-  drawBlankLine();
-  drawLine();
+  drawText("Warning", { color: "warning" });
   drawBlankLine();
   drawTextBlock(text);
   drawBlankLine();
-  drawText("Find online help in");
-  drawText("www.cedrosdev.com.br/winnetoujs");
-  drawBlankLine();
   drawLine();
-  drawSpace();
 };
 
 const drawWelcome = () => {
@@ -212,22 +232,26 @@ const drawWelcome = () => {
   drawText("(c) 2020 Cedros Development (https://cedrosdev.com)", {
     color: "dim",
   });
+
   drawBlankLine();
   drawLine();
   drawBlankLine();
-  drawBlankLine();
-  drawLine();
-  drawSpace();
 };
 
+/**
+ * Draw add
+ * @param {string} text add string
+ */
 const drawAdd = text => {
-  console.log("> [added] " + text);
+  drawText(text, { type: "add", color: "green" });
+  drawBlankLine();
 };
 
 const drawAddError = text => {
-  contadorDeErros++;
+  errorsCount++;
 
-  console.log("\n> [error on add (skip)] " + text + "\n");
+  drawText(text, { type: "addError", color: "cyan" });
+  drawBlankLine();
 };
 
 const drawHtmlMin = text => {
@@ -247,12 +271,12 @@ const drawFinal = () => {
   drawBlankLine();
   drawText("All tasks completed");
   drawBlankLine();
-  if (contadorDeErros > 0) {
-    drawText("... with " + contadorDeErros + " errors");
+  if (errorsCount > 0) {
+    drawText("... with " + errorsCount + " errors");
     drawBlankLine();
   }
-  if (contadorDeWarnings > 0) {
-    drawText("... with " + contadorDeWarnings + " warnings");
+  if (warningCount > 0) {
+    drawText("... with " + warningCount + " warnings");
     drawBlankLine();
   }
 
@@ -266,56 +290,81 @@ drawWelcome();
 
 // MAIN METHODS ================================================
 
-function fixedJson(badJSON) {
-  let a = badJSON
+/**
+ * List of errors
+ * @param {object} Err
+ */
+const Err = {
+  /**
+   * Cod e001
+   * Duplicated constructo error
+   * @param  {string} id
+   * @param  {string} filePath
+   * @param  {string} originalFile
+   */
+  e001(id, filePath, originalFile) {
+    drawError(
+      "Error code: e001\n" +
+        `The constructo [[${id}]] of file "${filePath}" is duplicated. The original file is "${originalFile}".`
+    );
+  },
+  /**
+   * Cod e002
+   * Transpile constructo error
+   * @param  {string} e
+   */
+  e002(e) {
+    drawError(
+      "Error Code: e002\n" +
+        "Transpile constructo error. Original Message: " +
+        e
+    );
+  },
+  /**
+   * Cod 003
+   * win.config.js
+   */
+  e003() {
+    drawError(
+      "Error Code: 003\n" +
+        `"./win.config.js" not found or misconfigured. Default config will be used.`
+    );
+  },
+  e004() {
+    drawError(
+      "Error Code: 004\n" + `Fatal error when creating the css bundle`
+    );
+  },
+};
 
-    .replace("{", "")
-    .replace("}", "")
-    .replace("export default", "")
-    .replace(";", "")
-
-    .split(",")
-
-    .filter(x => typeof x === "string" && x.trim().length > 0)
-
-    .join(",")
-
-    // Replace ":" with "@colon@" if it's between double-quotes
-    .replace(/:\s*"([^"]*)"/g, function (match, p1) {
-      return ': "' + p1.replace(/:/g, "@colon@") + '"';
-    })
-
-    // Replace ":" with "@colon@" if it's between single-quotes
-    .replace(/:\s*'([^']*)'/g, function (match, p1) {
-      return ': "' + p1.replace(/:/g, "@colon@") + '"';
-    })
-
-    // Add double-quotes around any tokens before the remaining ":"
-    .replace(/(['"])?([a-z0-9A-Z_]+)(['"])?\s*:/g, '"$2": ')
-
-    // Turn "@colon@" back into ":"
-    .replace(/@colon@/g, ":");
-
-  return JSON.parse(`{${a}}`);
-}
-
-function l(a, b) {
-  return;
-  a || b ? console.log("\n============") : null;
-  a ? console.dir(a) : null;
-  b ? console.log(b) : null;
-  a || b ? console.log("============") : null;
+function configTest() {
+  if (!Config.out) {
+    drawWarning(
+      "win.config.js misconfigured. Not found 'out' parameter. Using default './release'"
+    );
+    Config.out = "./release";
+  }
 }
 
 async function main() {
-  let data = await fs.readFile("./win.config.js", "utf-8");
-
-  Config = fixedJson(data);
-
-  if (Config?.css || Config?.sass) {
-    mainCss();
+  try {
+    let data = await fs.readFile("./win.config.js", "utf-8");
+    Config = fixedJson(data);
+  } catch (e) {
+    Config = {
+      constructosPath: "./constructos",
+      entry: "./js/app.js",
+      out: "./release",
+      folderName: "/",
+    };
+    Err.e003();
   }
-  await icons();
+
+  configTest();
+
+  if (Config?.css || Config?.sass) mainCss();
+
+  if (Config?.icons || Config?.coloredIcons) await icons();
 
   const constructosPath = Config.constructosPath;
 
@@ -336,23 +385,27 @@ async function main() {
         }
       }
 
-      for (let file in files) {
+      for (let index in files) {
         try {
-          let arquivo = files[file];
+          let file = files[index];
 
-          if (typeof arquivo === "string") {
-            let ext = path.parse(path.join(__dirname, arquivo)).ext;
+          if (typeof file === "string") {
+            let ext = path.parse(path.join(__dirname, file)).ext;
             // apenas se for html ou htm
             if (ext == ".html" || ext == ".htm") {
-              let constructoMethods = await transformarConstructo(
-                arquivo
-              );
-              resultado += constructoMethods.method;
-              constructos.push(constructoMethods.constructosList);
+              let constructoMethods = await transpileConstructo(file);
+
+              if (constructoMethods) {
+                drawAdd(file);
+                resultado += constructoMethods.method;
+                constructos.push(constructoMethods.constructosList);
+              } else {
+                drawAddError(file);
+              }
             }
           }
         } catch (e) {
-          console.log("Winnetou error", e.message);
+          Err.e002(e.message);
         }
       }
 
@@ -410,19 +463,45 @@ async function main() {
       // agora tenho que salvar o arquivo
 
       await fs.outputFile("./winnetou.js", resultadoFinal);
-
-      console.log("\n\n\nConstructos Class gerado com sucesso.");
     });
   });
 }
 
+function fixedJson(badJSON) {
+  let a = badJSON
+
+    .replace("{", "")
+    .replace("}", "")
+    .replace("export default", "")
+    .replace(";", "")
+
+    .split(",")
+
+    .filter(x => typeof x === "string" && x.trim().length > 0)
+
+    .join(",")
+
+    // Replace ":" with "@colon@" if it's between double-quotes
+    .replace(/:\s*"([^"]*)"/g, function (match, p1) {
+      return ': "' + p1.replace(/:/g, "@colon@") + '"';
+    })
+
+    // Replace ":" with "@colon@" if it's between single-quotes
+    .replace(/:\s*'([^']*)'/g, function (match, p1) {
+      return ': "' + p1.replace(/:/g, "@colon@") + '"';
+    })
+
+    // Add double-quotes around any tokens before the remaining ":"
+    .replace(/(['"])?([a-z0-9A-Z_]+)(['"])?\s*:/g, '"$2": ')
+
+    // Turn "@colon@" back into ":"
+    .replace(/@colon@/g, ":");
+
+  return JSON.parse(`{${a}}`);
+}
+
 async function icons() {
   return new Promise(async (resolve, reject) => {
-    /**
-     * Todo:
-     * coloredIcons
-     */
-
     let constructoIcons = "";
 
     const iconsPath = Config.icons;
@@ -431,6 +510,7 @@ async function icons() {
       let files = await recursive(iconsPath);
       for (let c = 0; c < files.length; c++) {
         let transpiledIcon = await transpileIcon(files[c]);
+
         constructoIcons += transpiledIcon;
       }
     }
@@ -441,13 +521,14 @@ async function icons() {
       let files = await recursive(coloredIconsPath);
       for (let c = 0; c < files.length; c++) {
         let transpiledIcon = await transpileColoredIcon(files[c]);
+
         constructoIcons += transpiledIcon;
       }
     }
 
     if (constructoIcons !== "") {
       await fs.outputFile(
-        path.join(Config.constructosPath, "icons.html"),
+        path.join(Config.constructosPath, "_icons.html"),
         prettify(constructoIcons)
       );
       return resolve();
@@ -459,95 +540,88 @@ async function icons() {
 
 async function transpileIcon(iconPath) {
   return new Promise((resolve, reject) => {
-    let xmlString = fs.readFileSync(iconPath, "utf8");
+    try {
+      let xmlString = fs.readFileSync(iconPath, "utf8");
 
-    let regPath = /[a-zA-Z]+/g;
+      let regPath = /[a-zA-Z]+/g;
 
-    let id = iconPath.match(regPath);
+      let id = iconPath.match(regPath);
 
-    id = id.filter(x => x != "svg");
+      id = id.filter(x => x != "svg");
 
-    id = id.join("_");
+      id = id.join("_");
 
-    let regVb = new RegExp('viewBox="(.*?)"', "gis");
+      let regVb = new RegExp('viewBox="(.*?)"', "gis");
 
-    let reg = new RegExp("<svg(.*?)>(.*?)</svg>", "is");
+      let reg = new RegExp("<svg(.*?)>(.*?)</svg>", "is");
 
-    if (xmlString) {
-      // trata o svg
+      if (xmlString) {
+        let viewBox = xmlString.match(regVb);
 
-      let viewBox = xmlString.match(regVb);
+        let arr = xmlString.match(reg);
 
-      let arr = xmlString.match(reg);
-
-      let symbol = `
+        let symbol = `
       <winnetou description="Create an icon **${id}**">
       <svg ${viewBox} id="[[${id}]]" class="winIcons {{?class%Class for the icon}}">`;
 
-      // limpa o fill para poder se trocar o fill
-      // via css
-      let cleanFill = arr[2].replace("fill", "data-fill");
+        let cleanFill = arr[2].replace("fill", "data-fill");
 
-      symbol += cleanFill;
+        symbol += cleanFill;
 
-      symbol += `</svg></winnetou>`;
+        symbol += `</svg></winnetou>`;
 
-      // agora tenho um array de paths
-      // tenho que colocar dentro do symbol
-
-      return resolve(symbol);
-    } else {
-      return reject();
+        drawAdd(iconPath);
+        return resolve(symbol);
+      } else {
+        return reject();
+      }
+    } catch (e) {
+      drawAddError(iconPath);
+      return resolve("");
     }
   });
 }
 
 async function transpileColoredIcon(iconsPath) {
-  console.log("dentro do transpile", iconsPath);
   return new Promise((resolve, reject) => {
-    let xmlString = fs.readFileSync(iconsPath, "utf8");
+    try {
+      let xmlString = fs.readFileSync(iconsPath, "utf8");
 
-    let regPath = /[a-zA-Z]+/g;
+      let regPath = /[a-zA-Z]+/g;
 
-    let id = iconsPath.match(regPath);
+      let id = iconsPath.match(regPath);
 
-    id = id.filter(x => x != "svg");
+      id = id.filter(x => x != "svg");
 
-    id = id.join("_");
+      id = id.join("_");
 
-    let regVb = new RegExp('viewBox="(.*?)"', "gis");
+      let regVb = new RegExp('viewBox="(.*?)"', "gis");
 
-    let reg = new RegExp("<svg(.*?)>(.*?)</svg>", "is");
+      let reg = new RegExp("<svg(.*?)>(.*?)</svg>", "is");
 
-    if (xmlString) {
-      // trata o svg
+      if (xmlString) {
+        let viewBox = xmlString.match(regVb);
 
-      let viewBox = xmlString.match(regVb);
+        let arr = xmlString.match(reg);
 
-      let arr = xmlString.match(reg);
-
-      // let symbol = `<symbol ${viewBox} id="${id}">`;
-
-      let symbol = `
+        let symbol = `
       <winnetou description="Create an colored icon **${id}**">
       <svg ${viewBox} id="[[${id}]]" class="winColoredIcons {{?class%Class for the colored icon}}">`;
 
-      // let cleanFill = arr[2].replace("fill", "data-fill");
+        let cleanFill = arr[2];
 
-      let cleanFill = arr[2];
+        symbol += cleanFill;
 
-      symbol += cleanFill;
+        symbol += `</svg></winnetou>`;
 
-      // symbol += `</symbol>`;
-
-      symbol += `</svg></winnetou>`;
-
-      // agora tenho um array de paths
-      // tenho que colocar dentro do symbol
-
-      return resolve(symbol);
-    } else {
-      return reject();
+        drawAdd(iconsPath);
+        return resolve(symbol);
+      } else {
+        return reject();
+      }
+    } catch (e) {
+      drawAddError(iconsPath);
+      return resolve("");
     }
   });
 }
@@ -608,63 +682,53 @@ async function translate() {
     );
   });
 }
-
-async function transformarConstructo(arquivo) {
+/**
+ * Transpile constructo html to WinnetouJs Class
+ * @param  {string} filePath
+ */
+async function transpileConstructo(filePath) {
   return new Promise((resolve, reject) => {
     try {
-      fs.readFile(arquivo, "utf-8", function (err, data) {
-        if (err) return reject(err);
+      fs.readFile(filePath, "utf-8", function (err, data) {
+        if (err) {
+          console.log("err :>> ", err);
+          return reject(err);
+        }
 
         // transforma o html em método
         let dom = htmlParser.parse(data);
-        let componentes = dom.querySelectorAll("winnetou");
-        let retornoTotal = "";
+        let components = dom.querySelectorAll("winnetou");
+        let finalReturn = "";
         let constructos = [];
 
-        Array.from(componentes).forEach(componente => {
-          let descri = componente.getAttribute("description");
-          let constructo = componente.innerHTML;
+        Array.from(components).forEach(component => {
+          let descri = component.getAttribute("description");
+          let constructo = component.innerHTML;
           let jsdoc =
             "\n\n// ========================================\n\n\n";
           jsdoc += "\n\n/**\n";
           jsdoc += `\t* ${descri || ""}\n`;
-          let elementsObrigatorio = false;
+          let requiredElement = false;
           let jsdoc2 = "";
-
-          l("descri", descri);
-
-          // todo:
-          // [ok] lógica dos ids
-          // ao chamar o método da classe Constructos tem que criar o
-          // id automaticamente, win-simpleDiv-1
 
           let id = constructo.match(/\[\[\s?(.*?)\s?\]\]/)[1];
           let pureId = id + "-win-${identifier}";
 
-          //verifica se o id é repetido
-          let verifica = idList.filter(data => data.id === id);
+          let verify = idList.filter(data => data.id === id);
 
-          if (verifica.length > 0) {
-            console.log(
-              `O constructo ${id} do arquivo ${arquivo} está duplicado`
-            );
-
-            console.log(
-              `Arquivo original: ${verifica[0].arquivo}\n\n`
-            );
-            throw new Error("id-001");
+          //duplicated constructo
+          if (verify.length > 0) {
+            Err.e001(id, filePath, verify[0].file);
           }
 
           idList.push({
-            arquivo,
+            file: filePath,
             id,
           });
 
           // ===========================================
           // ids replace ===============================
           // ===========================================
-
-          // Isso aqui para retornar os ids
 
           var regId = /\[\[\s*?(.*?)\s*?\]\]/g;
           var matchIds = constructo.match(regId);
@@ -692,67 +756,45 @@ async function transformarConstructo(arquivo) {
           // elements replace ==========================
           // ===========================================
 
-          // tenho que achar todos os elements dentro do constructo
           let regex = new RegExp("{{\\s*?(.*?)\\s*?}}", "g");
 
           let matches = constructo.match(regex);
 
           if (matches) {
             matches.forEach(match => {
-              //match contem o element puro
-              //match = "{{texto % Texto a ser apresentado na simpleDiv}}"
-
-              //obtem o element => el = 'texto % pipipipopopo'
               let el = match.replace("{{", "");
               el = el.replace("}}", "");
 
-              // verifica se tem comentario o jsdoc
               let elArr = el.split("%");
 
-              // verifica se o element é obrigatório ou opcional
-              let obrigatorio = false;
+              let required = false;
               if (elArr[0].indexOf("?") != -1) {
-                // é opcional
-                // quando tem o ? antes do element
-                // quer dizer que o mesmo é opcional
-                obrigatorio = false;
+                required = false;
               } else {
-                // é obrigatorio
-                obrigatorio = true;
-                elementsObrigatorio = true;
+                required = true;
+                requiredElement = true;
               }
 
-              //remove o ? do element e aplica o trim
-              // agora temos o element => el = 'texto'
-              // e o comentario jsdoc em comentario
               el = elArr[0].replace("?", "").trim();
-              let comentario = elArr[1] || "";
-
-              // todo:
-              // [ok] Comentário jsdoc
-
-              l(el);
-              l(obrigatorio ? "obrigatorio" : "opcional", comentario);
+              let commentary = elArr[1] || "";
 
               jsdoc2 += `\t* @param {any${
-                obrigatorio ? "" : "="
-              }} elements.${el} ${comentario.trim()}\n`;
+                required ? "" : "="
+              }} elements.${el} ${commentary.trim()}\n`;
 
-              // transforma o match em uma regexp aceitável
               let escapedString = escapeStringRegexp(match);
 
-              // faz o replace no constructo
               constructo = constructo.replace(
                 new RegExp(escapedString, "g"),
                 "${(elements?." +
                   el +
-                  (obrigatorio ? "" : ' || ""') +
+                  (required ? "" : ' || ""') +
                   ")}"
               );
             });
           }
 
-          if (elementsObrigatorio)
+          if (requiredElement)
             jsdoc += "\t* @param {object} elements\n";
           else jsdoc += "\t* @param {object} [elements]\n";
 
@@ -763,8 +805,7 @@ async function transformarConstructo(arquivo) {
           jsdoc += "\t* @private\n";
           jsdoc += "\t*/\n";
 
-          // agora tenho que transformar o componente em método
-          let retorno =
+          let _return =
             jsdoc +
             id +
             " = (elements, options) => {" +
@@ -797,27 +838,20 @@ async function transformarConstructo(arquivo) {
             "return {" +
             ids +
             "}" +
-            "}" + // fechamento create
-            "}" + // fechamento let obj
+            "}" + // create close
+            "}" + // closes let obj
             "component = obj.code(elements);" +
             "return obj;" +
             // -------------------------
-            "}"; // fechamento do método
+            "}"; // method close
           // ---------------------------
 
-          // "\n\nreturn {code:`" +
-          // constructo +
-          // "`," +
-          // ids +
-          // "}}" +
-          // " ";
-
-          retornoTotal += retorno;
+          finalReturn += _return;
           constructos.push(`${id}: this.${id}`);
         });
 
         return resolve({
-          method: beautify(retornoTotal, {
+          method: beautify(finalReturn, {
             indent_size: 2,
             space_in_empty_paren: true,
           }),
@@ -833,33 +867,43 @@ async function transformarConstructo(arquivo) {
 async function mainCss() {
   if (Config.sass) {
     recursive(Config.sass, async (err, files) => {
-      console.log("files :>> ", files);
-      files.forEach(file => {
-        promisesCss.push(transpileSass(file));
-      });
+      for (let c = 0; c < files.length; c++) {
+        try {
+          promisesCss.push(await transpileSass(files[c]));
+          drawAdd(files[c]);
+        } catch (e) {
+          drawAddError(files[c]);
+          drawText("Sass transpile error.");
+          drawTextBlock(e.message);
+          drawBlankLine();
+        }
+      }
+
       css();
     });
   }
 
   function css() {
     if (Config.css) {
-      // vai ler o diretório do css
       recursive(Config.css, async (err, files) => {
-        files.forEach(file => {
-          promisesCss.push(getData(file));
-        });
-        exec_();
+        for (let c = 0; c < files.length; c++) {
+          promisesCss.push(await getData(files[c]));
+          drawAdd(files[c]);
+        }
+
+        execPromisesCss();
       });
     } else {
-      exec_();
+      execPromisesCss();
     }
   }
 }
 
-function exec_() {
-  Promise.all(promisesCss).then(data => {
-    // data contem um array com todo o meu css
-    data.push(`    
+function execPromisesCss() {
+  Promise.all(promisesCss)
+    .then(data => {
+      // data contem um array com todo o meu css
+      data.push(`    
     * {
     -webkit-overflow-scrolling: touch;
       }   
@@ -868,18 +912,21 @@ function exec_() {
       }                
     `);
 
-    let result = UglifyCss.processString(data.join("\n"));
+      let result = UglifyCss.processString(data.join("\n"));
 
-    fs.outputFile(
-      Config.out + "/bundleWinnetouStyles.min.css",
-      result,
-      function (err) {
-        if (err) {
+      fs.outputFile(
+        Config.out + "/winnetouBundle.min.css",
+        result,
+        function (err) {
+          if (err) {
+            Err.e004();
+          }
         }
-        console.log("CSS and SASS ok");
-      }
-    );
-  });
+      );
+    })
+    .catch(e => {
+      Err.e004();
+    });
 }
 
 async function transpileSass(file) {
